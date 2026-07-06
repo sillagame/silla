@@ -38,7 +38,6 @@ $routes = [
     'GET' => [
         '/' => [\App\Presentation\Controllers\DashboardController::class, 'index'],
         '/login' => [\App\Presentation\Controllers\AuthController::class, 'showLogin'],
-        '/register' => [\App\Presentation\Controllers\AuthController::class, 'showRegister'],
         '/logout' => [\App\Presentation\Controllers\AuthController::class, 'logout'],
         '/dashboard' => [\App\Presentation\Controllers\DashboardController::class, 'index'],
         '/queues' => [\App\Presentation\Controllers\QueueController::class, 'index'],
@@ -53,7 +52,6 @@ $routes = [
     ],
     'POST' => [
         '/login' => [\App\Presentation\Controllers\AuthController::class, 'login'],
-        '/register' => [\App\Presentation\Controllers\AuthController::class, 'register'],
         '/kiosk' => [\App\Presentation\Controllers\QueueController::class, 'registerQueue'],
         '/queues/select-counter' => [\App\Presentation\Controllers\QueueController::class, 'selectCounter'],
         '/queues/create' => [\App\Presentation\Controllers\QueueController::class, 'create'],

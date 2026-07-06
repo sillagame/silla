@@ -28,4 +28,11 @@ return [
         'admin' => 'Admin',
         'officer' => 'Petugas',
     ],
+
+    // Admin Account Credentials (Hardcoded)
+    'admin' => [
+        'email' => 'admin@silla.com',
+        'password' => 'admin123',
+        'name' => 'Administrator',
+    ],
 ];

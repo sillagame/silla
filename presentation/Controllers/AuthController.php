@@ -2,12 +2,14 @@
 
 namespace App\Presentation\Controllers;
 
-use Container;
-use App\Application\UseCases\Auth\LoginUser;
-use App\Application\UseCases\Auth\RegisterUser;
 use App\Presentation\Middleware\AuthMiddleware;
-use Exception;
 
+/**
+ * AuthController — Autentikasi Admin (Single Account, Hardcode)
+ *
+ * Login divalidasi langsung terhadap kredensial di config/app.php.
+ * Tidak ada register publik — akun admin bersifat tunggal & tetap.
+ */
 class AuthController extends Controller
 {
     /**
@@ -23,87 +25,40 @@ class AuthController extends Controller
         $success = isset($_GET['success']) ? htmlspecialchars_decode(urldecode($_GET['success'])) : null;
 
         $this->render('auth/login', [
-            'title'   => 'Login - SiLLA',
+            'title'   => 'Login Admin - SiLLA',
             'error'   => $error,
             'success' => $success,
         ]);
     }
 
     /**
-     * Proses Login
+     * Proses Login — validasi hardcode dari config/app.php
      */
     public function login(): void
     {
-        $email    = strtolower(trim($_POST['email'] ?? ''));
+        $email    = strtolower(trim($_POST['email']    ?? ''));
         $password = $_POST['password'] ?? '';
 
-        try {
-            /** @var LoginUser $loginUseCase */
-            $loginUseCase = Container::get(LoginUser::class);
-            $result = $loginUseCase->execute($email, $password);
+        // Ambil kredensial dari konfigurasi
+        $appConfig     = require __DIR__ . '/../../../config/app.php';
+        $adminEmail    = strtolower($appConfig['admin']['email']    ?? 'admin@silla.com');
+        $adminPassword = $appConfig['admin']['password']             ?? 'admin123';
+        $adminName     = $appConfig['admin']['name']                 ?? 'Administrator';
 
-            $user = $result['user'];
-
-            // Set stateless signed cookie — bekerja di Vercel serverless
-            AuthMiddleware::setAuthCookie([
-                'uid'   => $user->uid,
-                'email' => $user->email,
-                'name'  => $user->displayName,
-                'role'  => $user->role,
-            ]);
-
-            $this->redirect('/dashboard');
-
-        } catch (Exception $e) {
-            $msg = $e->getMessage();
-            if (str_contains($msg, 'SQLSTATE') || str_contains($msg, 'Connection') || str_contains($msg, 'could not')) {
-                $msg = 'Gagal terhubung ke server database. Periksa konfigurasi koneksi.';
-            }
-            $this->redirect('/login?error=' . urlencode($msg));
-        }
-    }
-
-    /**
-     * Tampilan halaman Register
-     */
-    public function showRegister(): void
-    {
-        if (AuthMiddleware::isAuthenticated()) {
-            $this->redirect('/dashboard');
+        if ($email !== $adminEmail || $password !== $adminPassword) {
+            $this->redirect('/login?error=' . urlencode('Email atau Password admin salah.'));
+            return;
         }
 
-        $error = isset($_GET['error']) ? htmlspecialchars_decode(urldecode($_GET['error'])) : null;
-
-        $this->render('auth/register', [
-            'title' => 'Pendaftaran Akun - SiLLA',
-            'error' => $error,
+        // Set stateless signed cookie (berfungsi di Vercel serverless)
+        AuthMiddleware::setAuthCookie([
+            'uid'   => 'u_admin',
+            'email' => $adminEmail,
+            'name'  => $adminName,
+            'role'  => 'admin',
         ]);
-    }
 
-    /**
-     * Proses Pendaftaran/Register
-     */
-    public function register(): void
-    {
-        $name     = trim($_POST['name']     ?? '');
-        $email    = strtolower(trim($_POST['email'] ?? ''));
-        $password = $_POST['password'] ?? '';
-        $role     = 'officer';
-
-        try {
-            /** @var RegisterUser $registerUseCase */
-            $registerUseCase = Container::get(RegisterUser::class);
-            $registerUseCase->execute($name, $email, $password, $role);
-
-            $this->redirect('/login?success=' . urlencode('Pendaftaran berhasil! Silakan masuk menggunakan akun baru Anda.'));
-
-        } catch (Exception $e) {
-            $msg = $e->getMessage();
-            if (str_contains($msg, 'SQLSTATE') || str_contains($msg, 'Connection') || str_contains($msg, 'could not')) {
-                $msg = 'Gagal terhubung ke server database. Periksa konfigurasi koneksi.';
-            }
-            $this->redirect('/register?error=' . urlencode($msg));
-        }
+        $this->redirect('/dashboard');
     }
 
     /**

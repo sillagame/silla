@@ -33,7 +33,7 @@
         </form>
 
         <div class="auth-footer">
-            Belum punya akun? <a href="<?= url('/register') ?>" class="auth-link">Daftar di sini</a>
+            Kembali ke <a href="<?= url('/') ?>" class="auth-link">Beranda</a>
         </div>
     </div>
 </div>
