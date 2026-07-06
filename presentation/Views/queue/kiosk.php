@@ -152,25 +152,25 @@
 
                         <div class="form-group">
                             <label for="nik" class="form-label">NIK (16 digit KTP)</label>
-                            <input type="text" id="nik" name="nik" class="form-control" placeholder="16 digit NIK KTP" required maxlength="16" minlength="16" pattern="[0-9]{16}">
+                            <input type="text" id="nik" name="nik" class="form-control" placeholder="16 digit NIK KTP" required maxlength="16" minlength="16" pattern="[0-9]{16}" value="<?= htmlspecialchars($prefilledPasien['nik'] ?? '') ?>">
                         </div>
 
                         <div class="form-group">
                             <label for="nama" class="form-label">Nama Lengkap</label>
-                            <input type="text" id="nama" name="nama" class="form-control" placeholder="Nama sesuai KTP" required>
+                            <input type="text" id="nama" name="nama" class="form-control" placeholder="Nama sesuai KTP" required value="<?= htmlspecialchars($prefilledPasien['nama'] ?? '') ?>">
                         </div>
 
                         <div class="grid-2" style="gap: 16px; margin-bottom: 0;">
                             <div class="form-group">
                                 <label for="tgl_lahir" class="form-label">Tanggal Lahir</label>
-                                <input type="date" id="tgl_lahir" name="tgl_lahir" class="form-control" required>
+                                <input type="date" id="tgl_lahir" name="tgl_lahir" class="form-control" required value="<?= htmlspecialchars($prefilledPasien['tgl_lahir'] ?? '') ?>">
                             </div>
                             <div class="form-group">
                                 <label for="jk" class="form-label">Jenis Kelamin</label>
                                 <select id="jk" name="jk" class="form-control" required style="height: 48px; background: #fafafa; border: 1.5px solid var(--border-light); border-radius: 10px;">
                                     <option value="">-- Pilih --</option>
-                                    <option value="Laki-laki">Laki-laki</option>
-                                    <option value="Perempuan">Perempuan</option>
+                                    <option value="Laki-laki" <?= ($prefilledPasien['jk'] ?? '') === 'Laki-laki' ? 'selected' : '' ?>>Laki-laki</option>
+                                    <option value="Perempuan" <?= ($prefilledPasien['jk'] ?? '') === 'Perempuan' ? 'selected' : '' ?>>Perempuan</option>
                                 </select>
                             </div>
                         </div>
@@ -178,17 +178,17 @@
                         <div class="grid-2" style="gap: 16px; margin-bottom: 0;">
                             <div class="form-group">
                                 <label for="no_telp" class="form-label">No. Telepon</label>
-                                <input type="text" id="no_telp" name="no_telp" class="form-control" placeholder="Contoh: 08123456789" required>
+                                <input type="text" id="no_telp" name="no_telp" class="form-control" placeholder="Contoh: 08123456789" required value="<?= htmlspecialchars($prefilledPasien['no_telp'] ?? '') ?>">
                             </div>
                             <div class="form-group">
                                 <label for="no_bpjs" class="form-label">No. BPJS (Opsional)</label>
-                                <input type="text" id="no_bpjs" name="no_bpjs" class="form-control" placeholder="Kosongkan jika bukan BPJS">
+                                <input type="text" id="no_bpjs" name="no_bpjs" class="form-control" placeholder="Kosongkan jika bukan BPJS" value="<?= htmlspecialchars($prefilledPasien['no_bpjs'] ?? '') ?>">
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label for="alamat" class="form-label">Alamat</label>
-                            <textarea id="alamat" name="alamat" class="form-control" placeholder="Alamat lengkap tempat tinggal" required style="min-height: 80px; resize: vertical; padding: 12px 16px;"></textarea>
+                            <textarea id="alamat" name="alamat" class="form-control" placeholder="Alamat lengkap tempat tinggal" required style="min-height: 80px; resize: vertical; padding: 12px 16px;"><?= htmlspecialchars($prefilledPasien['alamat'] ?? '') ?></textarea>
                         </div>
 
                         <!-- Data Kunjungan -->

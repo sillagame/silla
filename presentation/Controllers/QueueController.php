@@ -123,6 +123,15 @@ class QueueController extends Controller
         $selectedPoli   = $_GET['kd_poli'] ?? null;
         $selectedDokter = $_GET['kd_dokter'] ?? null;
 
+        // Prefill data pasien lama jika ada parameter nik di URL
+        $prefilledPasien = null;
+        $nikQuery = $_GET['nik'] ?? null;
+        if ($nikQuery) {
+            $stmtPrefill = $db->prepare("SELECT * FROM pasiens WHERE nik = :nik LIMIT 1");
+            $stmtPrefill->execute(['nik' => $nikQuery]);
+            $prefilledPasien = $stmtPrefill->fetch(PDO::FETCH_ASSOC);
+        }
+
         $this->render('queue/kiosk', [
             'title'          => 'Pendaftaran Antrian - Puskesmas Salem',
             'polis'          => $polis,
@@ -130,6 +139,7 @@ class QueueController extends Controller
             'selectedPoli'   => $selectedPoli,
             'selectedDokter' => $selectedDokter,
             'successTicket'  => $successTicket,
+            'prefilledPasien'=> $prefilledPasien,
             'error'          => $error
         ]);
     }

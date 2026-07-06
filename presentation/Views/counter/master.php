@@ -402,6 +402,7 @@
                                     <td class="text-muted-sm"><?= htmlspecialchars($pas['no_telp']) ?></td>
                                     <td style="text-align: right;">
                                         <div class="table-actions">
+                                            <a href="<?= url('/kiosk?nik=' . urlencode($pas['nik'])) ?>" class="btn btn-success btn-sm">Daftar Antrian</a>
                                             <button type="button" class="btn btn-secondary btn-sm" onclick="loadPasienEdit('<?= htmlspecialchars($pas['no_rm']) ?>', '<?= htmlspecialchars($pas['nik']) ?>', '<?= htmlspecialchars($pas['nama']) ?>', '<?= htmlspecialchars($pas['tgl_lahir']) ?>', '<?= htmlspecialchars($pas['jk']) ?>', '<?= htmlspecialchars($pas['no_telp']) ?>', '<?= htmlspecialchars($pas['no_bpjs']) ?>', '<?= htmlspecialchars(json_encode($pas['alamat'])) ?>')">Edit</button>
                                             <form action="<?= url('/admin/master/pasien/delete') ?>" method="POST" onsubmit="return confirm('Hapus data pasien ini? Seluruh riwayat antrian pasien ini juga akan terhapus.')" style="margin:0;">
                                                 <input type="hidden" name="no_rm" value="<?= htmlspecialchars($pas['no_rm']) ?>">
