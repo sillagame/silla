@@ -126,15 +126,15 @@ $_authUser  = \App\Presentation\Middleware\AuthMiddleware::getUser();
 
     <!-- Footer (Hanya muncul jika bukan halaman login/register) -->
     <?php if (!$isAuthPage): ?>
-        <footer class="footer-credits-custom" style="background-color: var(--bg-header); color: #ffffff; border-top: none; padding: 40px 24px;">
-            <div class="footer-container" style="max-width: 1200px; margin: 0 auto; text-align: center;">
+        <footer class="footer-credits-custom" style="background-color: var(--bg-header); color: #ffffff; border-top: none;">
+            <div class="footer-container">
                 <div style="display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 24px;">
                     <div style="width: 44px; height: 44px; background: #ffffff; color: var(--bg-header); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">🏥</div>
                     <span style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 800;">Puskesmas Salem</span>
-                    <span style="font-size: 0.85rem; opacity: 0.8; letter-spacing: 0.05em;">Sistem Antrian & Jadwal Dokter Online</span>
+                    <span style="font-size: 0.85rem; opacity: 0.8; letter-spacing: 0.05em;">Sistem Antrian &amp; Jadwal Dokter Online</span>
                 </div>
                 
-                <div class="flex-row" style="justify-content: center; gap: 30px; margin-bottom: 24px; font-size: 0.88rem; opacity: 0.9;">
+                <div class="footer-info-row" style="color: rgba(255,255,255,0.9);">
                     <span>📍 Jl. Desa Salem, Kecamatan Salem</span>
                     <span>✉️ puskesmassalem@gmail.com</span>
                     <span>📞 0858-6767-6760</span>

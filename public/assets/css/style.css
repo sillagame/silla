@@ -899,7 +899,6 @@ h1, h2, h3, h4, h5, h6 {
 .footer-credits-custom {
     background: #ffffff;
     border-top: 1px solid var(--border-light);
-    padding: 20px 24px;
     text-align: center;
     margin-top: auto;
 }
@@ -907,6 +906,48 @@ h1, h2, h3, h4, h5, h6 {
 .footer-container p {
     color: var(--text-muted);
     font-size: 0.85rem;
+}
+
+/* ============================================================
+   Utility: Typography helpers (replaces inline styles in views)
+   ============================================================ */
+.fw-bold    { font-weight: 700; }
+.fw-semibold{ font-weight: 600; }
+.fw-normal  { font-weight: 400; }
+
+.text-primary-dark { color: var(--primary-dark); }
+.text-success      { color: var(--success); }
+.text-danger       { color: var(--danger); }
+.text-muted        { color: var(--text-muted); }
+.text-secondary    { color: var(--text-secondary); }
+
+.text-muted-sm {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* Poli/badge chip inside tables */
+.badge-poli {
+    display: inline-block;
+    font-size: 0.78rem;
+    background-color: #f0fdf4;
+    color: var(--primary-dark);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+/* Button size variants */
+.btn-sm {
+    padding: 5px 12px;
+    font-size: 0.8rem;
+    border-radius: 7px;
+}
+
+.btn-lg {
+    padding: 14px 28px;
+    font-size: 1.05rem;
 }
 
 /* Animations */

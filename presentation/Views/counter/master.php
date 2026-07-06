@@ -1,13 +1,15 @@
 <!-- Halaman Manajemen Master Data (Admin Only) -->
 <div class="page-container">
-    <div style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center;">
-        <div>
-            <h1 style="font-size: 2.2rem; margin-bottom: 5px; font-family: var(--font-heading);">🗂️ Manajemen Master Data</h1>
-            <p style="color: var(--text-secondary);">Kelola data master Poliklinik, Dokter, Jadwal Praktik, dan Pasien.</p>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-header-title">
+            <h1>🗂️ Manajemen Master Data</h1>
+            <p>Kelola data master Poliklinik, Dokter, Jadwal Praktik, dan Pasien.</p>
         </div>
-        <a href="<?= url('/queues') ?>" class="btn" style="padding: 10px 20px; font-size: 0.88rem; background-color: #f1f5f9; color: var(--text-primary); border: 1.5px solid var(--border-light); font-weight: 700; border-radius: 8px; text-decoration: none;">
-            &larr; Control Panel
-        </a>
+        <div class="page-header-action">
+            <a href="<?= url('/queues') ?>" class="btn btn-secondary">&larr; Control Panel</a>
+        </div>
     </div>
 
     <?php if (!empty($success)): ?>
@@ -23,24 +25,16 @@
     <?php endif; ?>
 
     <!-- Tab Bar -->
-    <div style="display: flex; gap: 8px; border-bottom: 2px solid var(--border-light); margin-bottom: 24px; padding-bottom: 2px; overflow-x: auto;">
-        <a href="?tab=poli" class="nav-item" style="padding: 12px 20px; font-weight: 700; text-decoration: none; border-bottom: 3px solid <?= $activeTab === 'poli' ? 'var(--primary)' : 'transparent' ?>; color: <?= $activeTab === 'poli' ? 'var(--primary-dark)' : 'var(--text-secondary)' ?>;">
-            🏢 Poliklinik
-        </a>
-        <a href="?tab=dokter" class="nav-item" style="padding: 12px 20px; font-weight: 700; text-decoration: none; border-bottom: 3px solid <?= $activeTab === 'dokter' ? 'var(--primary)' : 'transparent' ?>; color: <?= $activeTab === 'dokter' ? 'var(--primary-dark)' : 'var(--text-secondary)' ?>;">
-            🩺 Dokter
-        </a>
-        <a href="?tab=jadwal" class="nav-item" style="padding: 12px 20px; font-weight: 700; text-decoration: none; border-bottom: 3px solid <?= $activeTab === 'jadwal' ? 'var(--primary)' : 'transparent' ?>; color: <?= $activeTab === 'jadwal' ? 'var(--primary-dark)' : 'var(--text-secondary)' ?>;">
-            🗓️ Jadwal Praktik
-        </a>
-        <a href="?tab=pasien" class="nav-item" style="padding: 12px 20px; font-weight: 700; text-decoration: none; border-bottom: 3px solid <?= $activeTab === 'pasien' ? 'var(--primary)' : 'transparent' ?>; color: <?= $activeTab === 'pasien' ? 'var(--primary-dark)' : 'var(--text-secondary)' ?>;">
-            👥 Pasien (Rekam Medis)
-        </a>
+    <div class="tab-bar">
+        <a href="?tab=poli"   class="tab-item <?= $activeTab === 'poli'   ? 'active' : '' ?>">🏢 Poliklinik</a>
+        <a href="?tab=dokter" class="tab-item <?= $activeTab === 'dokter' ? 'active' : '' ?>">🩺 Dokter</a>
+        <a href="?tab=jadwal" class="tab-item <?= $activeTab === 'jadwal' ? 'active' : '' ?>">🗓️ Jadwal Praktik</a>
+        <a href="?tab=pasien" class="tab-item <?= $activeTab === 'pasien' ? 'active' : '' ?>">👥 Pasien (Rekam Medis)</a>
     </div>
 
     <!-- TAB 1: POLIKLINIK -->
     <?php if ($activeTab === 'poli'): ?>
-        <div class="grid-3" style="grid-template-columns: 2fr 1fr; gap: 24px;">
+        <div class="master-layout">
             <div class="glass-panel" style="border-radius: 16px;">
                 <h3 class="glass-panel-title" style="font-family: var(--font-heading);">Daftar Poliklinik</h3>
                 <div class="table-responsive">
@@ -55,14 +49,14 @@
                         <tbody>
                             <?php foreach ($polis as $p): ?>
                                 <tr>
-                                    <td style="font-weight: 700; color: var(--primary-dark);"><?= htmlspecialchars($p['kd_poli']) ?></td>
-                                    <td style="font-weight: 600;"><?= htmlspecialchars($p['nama_poli']) ?></td>
+                                    <td class="fw-bold text-primary-dark"><?= htmlspecialchars($p['kd_poli']) ?></td>
+                                    <td class="fw-semibold"><?= htmlspecialchars($p['nama_poli']) ?></td>
                                     <td style="text-align: right;">
-                                        <div style="display: inline-flex; gap: 8px;">
-                                            <button type="button" class="btn" style="padding: 6px 12px; font-size: 0.8rem; background-color: #f1f5f9;" onclick="loadPoliEdit('<?= htmlspecialchars($p['kd_poli']) ?>', '<?= htmlspecialchars($p['nama_poli']) ?>')">Edit</button>
+                                        <div class="table-actions">
+                                            <button type="button" class="btn btn-secondary btn-sm" onclick="loadPoliEdit('<?= htmlspecialchars($p['kd_poli']) ?>', '<?= htmlspecialchars($p['nama_poli']) ?>')">Edit</button>
                                             <form action="<?= url('/admin/master/poli/delete') ?>" method="POST" onsubmit="return confirm('Hapus poliklinik ini? Semua dokter di poli ini juga akan terhapus.')" style="margin:0;">
                                                 <input type="hidden" name="kd_poli" value="<?= htmlspecialchars($p['kd_poli']) ?>">
-                                                <button type="submit" class="btn btn-danger" style="padding: 6px 12px; font-size: 0.8rem;">Hapus</button>
+                                                <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
                                             </form>
                                         </div>
                                     </td>
@@ -127,7 +121,7 @@
 
     <!-- TAB 2: DOKTER -->
     <?php if ($activeTab === 'dokter'): ?>
-        <div class="grid-3" style="grid-template-columns: 2fr 1fr; gap: 24px;">
+        <div class="master-layout">
             <div class="glass-panel" style="border-radius: 16px;">
                 <h3 class="glass-panel-title" style="font-family: var(--font-heading);">Daftar Dokter</h3>
                 <div class="table-responsive">
@@ -143,15 +137,15 @@
                         <tbody>
                             <?php foreach ($dokters as $d): ?>
                                 <tr>
-                                    <td style="font-weight: 700; color: var(--primary-dark);"><?= htmlspecialchars($d['kd_dokter']) ?></td>
-                                    <td style="font-weight: 600;"><?= htmlspecialchars($d['nama_dokter']) ?></td>
-                                    <td><span style="font-size: 0.8rem; background-color: #f0fdf4; color: var(--primary-dark); padding: 2px 8px; border-radius: 4px; font-weight: 700; text-transform: uppercase;"><?= htmlspecialchars($d['nama_poli']) ?></span></td>
+                                    <td class="fw-bold text-primary-dark"><?= htmlspecialchars($d['kd_dokter']) ?></td>
+                                    <td class="fw-semibold"><?= htmlspecialchars($d['nama_dokter']) ?></td>
+                                    <td><span class="badge-poli"><?= htmlspecialchars($d['nama_poli']) ?></span></td>
                                     <td style="text-align: right;">
-                                        <div style="display: inline-flex; gap: 8px;">
-                                            <button type="button" class="btn" style="padding: 6px 12px; font-size: 0.8rem; background-color: #f1f5f9;" onclick="loadDokterEdit('<?= htmlspecialchars($d['kd_dokter']) ?>', '<?= htmlspecialchars($d['nama_dokter']) ?>', '<?= htmlspecialchars($d['kd_poli']) ?>')">Edit</button>
+                                        <div class="table-actions">
+                                            <button type="button" class="btn btn-secondary btn-sm" onclick="loadDokterEdit('<?= htmlspecialchars($d['kd_dokter']) ?>', '<?= htmlspecialchars($d['nama_dokter']) ?>', '<?= htmlspecialchars($d['kd_poli']) ?>')">Edit</button>
                                             <form action="<?= url('/admin/master/dokter/delete') ?>" method="POST" onsubmit="return confirm('Hapus dokter ini? Semua jadwal prakteknya juga akan terhapus.')" style="margin:0;">
                                                 <input type="hidden" name="kd_dokter" value="<?= htmlspecialchars($d['kd_dokter']) ?>">
-                                                <button type="submit" class="btn btn-danger" style="padding: 6px 12px; font-size: 0.8rem;">Hapus</button>
+                                                <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
                                             </form>
                                         </div>
                                     </td>
@@ -234,7 +228,7 @@
 
     <!-- TAB 3: JADWAL PRAKTIK -->
     <?php if ($activeTab === 'jadwal'): ?>
-        <div class="grid-3" style="grid-template-columns: 2fr 1fr; gap: 24px;">
+        <div class="master-layout">
             <div class="glass-panel" style="border-radius: 16px;">
                 <h3 class="glass-panel-title" style="font-family: var(--font-heading);">Daftar Jadwal Praktik Dokter</h3>
                 <div class="table-responsive">
@@ -252,17 +246,17 @@
                         <tbody>
                             <?php foreach ($jadwals as $j): ?>
                                 <tr>
-                                    <td style="font-weight: 700; color: var(--primary-dark);"><?= htmlspecialchars($j['hari']) ?></td>
-                                    <td style="font-weight: 600;"><?= htmlspecialchars($j['nama_dokter']) ?></td>
-                                    <td><span style="font-size: 0.8rem; background-color: #f0fdf4; color: var(--primary-dark); padding: 2px 8px; border-radius: 4px; font-weight: 700; text-transform: uppercase;"><?= htmlspecialchars($j['nama_poli']) ?></span></td>
-                                    <td style="font-size: 0.88rem; color: var(--text-secondary);"><?= substr($j['jam_mulai'], 0, 5) ?> - <?= substr($j['jam_selesai'], 0, 5) ?></td>
-                                    <td style="font-weight: 700; color: var(--text-primary);"><?= $j['kuota'] ?></td>
+                                    <td class="fw-bold text-primary-dark"><?= htmlspecialchars($j['hari']) ?></td>
+                                    <td class="fw-semibold"><?= htmlspecialchars($j['nama_dokter']) ?></td>
+                                    <td><span class="badge-poli"><?= htmlspecialchars($j['nama_poli']) ?></span></td>
+                                    <td class="text-muted-sm"><?= substr($j['jam_mulai'], 0, 5) ?> - <?= substr($j['jam_selesai'], 0, 5) ?></td>
+                                    <td class="fw-bold"><?= $j['kuota'] ?></td>
                                     <td style="text-align: right;">
-                                        <div style="display: inline-flex; gap: 8px;">
-                                            <button type="button" class="btn" style="padding: 6px 12px; font-size: 0.8rem; background-color: #f1f5f9;" onclick="loadJadwalEdit(<?= $j['id'] ?>, '<?= htmlspecialchars($j['kd_dokter']) ?>', '<?= htmlspecialchars($j['hari']) ?>', '<?= substr($j['jam_mulai'], 0, 5) ?>', '<?= substr($j['jam_selesai'], 0, 5) ?>', <?= $j['kuota'] ?>)">Edit</button>
+                                        <div class="table-actions">
+                                            <button type="button" class="btn btn-secondary btn-sm" onclick="loadJadwalEdit(<?= $j['id'] ?>, '<?= htmlspecialchars($j['kd_dokter']) ?>', '<?= htmlspecialchars($j['hari']) ?>', '<?= substr($j['jam_mulai'], 0, 5) ?>', '<?= substr($j['jam_selesai'], 0, 5) ?>', <?= $j['kuota'] ?>)">Edit</button>
                                             <form action="<?= url('/admin/master/jadwal/delete') ?>" method="POST" onsubmit="return confirm('Hapus jadwal praktik ini?')" style="margin:0;">
                                                 <input type="hidden" name="id" value="<?= $j['id'] ?>">
-                                                <button type="submit" class="btn btn-danger" style="padding: 6px 12px; font-size: 0.8rem;">Hapus</button>
+                                                <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
                                             </form>
                                         </div>
                                     </td>
@@ -381,7 +375,7 @@
 
     <!-- TAB 4: PASIEN -->
     <?php if ($activeTab === 'pasien'): ?>
-        <div class="grid-3" style="grid-template-columns: 2.2fr 1fr; gap: 24px;">
+        <div class="master-layout">
             <div class="glass-panel" style="border-radius: 16px;">
                 <h3 class="glass-panel-title" style="font-family: var(--font-heading);">Rekam Medis Pasien Terdaftar</h3>
                 <div class="table-responsive">
@@ -400,18 +394,18 @@
                         <tbody>
                             <?php foreach ($pasiens as $pas): ?>
                                 <tr>
-                                    <td style="font-weight: 700; color: var(--primary-dark);"><?= htmlspecialchars($pas['no_rm']) ?></td>
-                                    <td style="font-size: 0.85rem; color: var(--text-secondary);"><?= htmlspecialchars($pas['nik']) ?></td>
-                                    <td style="font-weight: 600;"><?= htmlspecialchars($pas['nama']) ?></td>
-                                    <td style="font-size: 0.85rem; color: var(--text-secondary);"><?= date('d-m-Y', strtotime($pas['tgl_lahir'])) ?></td>
+                                    <td class="fw-bold text-primary-dark"><?= htmlspecialchars($pas['no_rm']) ?></td>
+                                    <td class="text-muted-sm"><?= htmlspecialchars($pas['nik']) ?></td>
+                                    <td class="fw-semibold"><?= htmlspecialchars($pas['nama']) ?></td>
+                                    <td class="text-muted-sm"><?= date('d-m-Y', strtotime($pas['tgl_lahir'])) ?></td>
                                     <td><?= htmlspecialchars($pas['jk']) ?></td>
-                                    <td style="font-size: 0.85rem; color: var(--text-secondary);"><?= htmlspecialchars($pas['no_telp']) ?></td>
+                                    <td class="text-muted-sm"><?= htmlspecialchars($pas['no_telp']) ?></td>
                                     <td style="text-align: right;">
-                                        <div style="display: inline-flex; gap: 8px;">
-                                            <button type="button" class="btn" style="padding: 6px 12px; font-size: 0.8rem; background-color: #f1f5f9;" onclick="loadPasienEdit('<?= htmlspecialchars($pas['no_rm']) ?>', '<?= htmlspecialchars($pas['nik']) ?>', '<?= htmlspecialchars($pas['nama']) ?>', '<?= htmlspecialchars($pas['tgl_lahir']) ?>', '<?= htmlspecialchars($pas['jk']) ?>', '<?= htmlspecialchars($pas['no_telp']) ?>', '<?= htmlspecialchars($pas['no_bpjs']) ?>', '<?= htmlspecialchars(json_encode($pas['alamat'])) ?>')">Edit</button>
+                                        <div class="table-actions">
+                                            <button type="button" class="btn btn-secondary btn-sm" onclick="loadPasienEdit('<?= htmlspecialchars($pas['no_rm']) ?>', '<?= htmlspecialchars($pas['nik']) ?>', '<?= htmlspecialchars($pas['nama']) ?>', '<?= htmlspecialchars($pas['tgl_lahir']) ?>', '<?= htmlspecialchars($pas['jk']) ?>', '<?= htmlspecialchars($pas['no_telp']) ?>', '<?= htmlspecialchars($pas['no_bpjs']) ?>', '<?= htmlspecialchars(json_encode($pas['alamat'])) ?>')">Edit</button>
                                             <form action="<?= url('/admin/master/pasien/delete') ?>" method="POST" onsubmit="return confirm('Hapus data pasien ini? Seluruh riwayat antrian pasien ini juga akan terhapus.')" style="margin:0;">
                                                 <input type="hidden" name="no_rm" value="<?= htmlspecialchars($pas['no_rm']) ?>">
-                                                <button type="submit" class="btn btn-danger" style="padding: 6px 12px; font-size: 0.8rem;">Hapus</button>
+                                                <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
                                             </form>
                                         </div>
                                     </td>
