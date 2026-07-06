@@ -1,0 +1,403 @@
+/*
+ * ============================================================
+ *  SiLLA — Global Responsive Design System
+ *  DRY Breakpoint File — Pisahkan dari style.css agar mudah dikelola
+ *
+ *  Breakpoints:
+ *    Mobile  : < 640px
+ *    Tablet  : 640px - 1023px
+ *    Desktop : >= 1024px
+ *
+ *  Spacing Scale (CSS Custom Properties):
+ *    --space-xs  : 8px
+ *    --space-sm  : 16px
+ *    --space-md  : 24px
+ *    --space-lg  : 40px
+ *    --space-xl  : 64px
+ *
+ *  Container max-width:
+ *    Mobile  : 100% (padding 16px each side)
+ *    Tablet  : 100% (padding 24px each side)
+ *    Desktop : 1200px (centered, padding 24px each side)
+ * ============================================================
+ */
+
+/* ============================================================
+   1. SPACING TOKENS (Global Variables)
+   ============================================================ */
+:root {
+    --space-xs  : 8px;
+    --space-sm  : 16px;
+    --space-md  : 24px;
+    --space-lg  : 40px;
+    --space-xl  : 64px;
+
+    /* Container horizontal padding */
+    --container-px        : 24px;
+    /* Container max-width */
+    --container-max-width : 1200px;
+    /* Section vertical margin */
+    --section-my          : 40px;
+    /* Card padding */
+    --card-p              : 30px;
+}
+
+/* ============================================================
+   2. GLOBAL CONTAINER UTILITY
+   Gunakan .container di semua halaman sebagai wrapper utama.
+   Ini menggantikan .page-container yang tersebar di view.
+   ============================================================ */
+.container {
+    width: 100%;
+    max-width: var(--container-max-width);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--container-px);
+    padding-right: var(--container-px);
+}
+
+/* Sync .page-container menggunakan token yang sama */
+.page-container {
+    max-width: var(--container-max-width);
+    margin: var(--section-my) auto;
+    padding: 0 var(--container-px);
+}
+
+/* ============================================================
+   3. MOBILE FIRST — BASE (< 640px)
+   ============================================================ */
+@media (max-width: 639px) {
+    :root {
+        --container-px : 16px;
+        --section-my   : 20px;
+        --card-p       : 18px;
+        --space-lg     : 28px;
+        --space-xl     : 40px;
+    }
+
+    /* Navbar */
+    .app-header .header-container {
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 10px 16px;
+    }
+
+    .nav-links {
+        order: 3;
+        width: 100%;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: 4px;
+        gap: 2px;
+        scrollbar-width: none; /* Firefox */
+    }
+
+    .nav-links::-webkit-scrollbar {
+        display: none; /* Chrome/Safari */
+    }
+
+    .nav-item {
+        padding: 7px 10px;
+        font-size: 0.82rem;
+        white-space: nowrap;
+    }
+
+    .nav-auth-actions {
+        gap: 8px;
+    }
+
+    .user-badge {
+        padding: 4px 10px;
+        font-size: 0.78rem;
+    }
+
+    .user-role-label {
+        display: none;
+    }
+
+    /* Hero */
+    .hero-section {
+        padding: 40px 16px;
+    }
+
+    .hero-title {
+        font-size: 1.8rem;
+        line-height: 1.2;
+    }
+
+    .hero-desc {
+        font-size: 0.95rem;
+    }
+
+    .hero-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .btn-hero-primary,
+    .btn-hero-secondary {
+        width: 100%;
+        justify-content: center;
+        padding: 13px 20px;
+        font-size: 0.95rem;
+    }
+
+    /* Stats bar: stack vertically */
+    .stats-bar-container {
+        grid-template-columns: 1fr !important;
+    }
+
+    .stat-item {
+        padding: 20px 16px;
+        border-right: none !important;
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .stat-num {
+        font-size: 2.4rem;
+    }
+
+    /* Page container */
+    .page-container {
+        margin: 20px auto;
+        padding: 0 16px;
+    }
+
+    /* Glass panel */
+    .glass-panel {
+        padding: 18px;
+        border-radius: 12px;
+    }
+
+    /* Dashboard grid: 1 col */
+    .dashboard-grid,
+    .operator-grid,
+    .counter-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 12px;
+    }
+
+    /* Tables: horizontal scroll */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 12px;
+    }
+
+    table {
+        min-width: 540px;
+    }
+
+    /* Kiosk & Display */
+    .kiosk-card {
+        padding: 24px 16px !important;
+    }
+
+    .display-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px;
+    }
+
+    /* Buttons block on mobile */
+    .btn-block-mobile {
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Section title */
+    .section-title,
+    .glass-panel-title {
+        font-size: 1.25rem;
+    }
+
+    /* Auth card */
+    .auth-card {
+        padding: 24px 18px;
+        border-radius: 16px;
+    }
+
+    /* Footer */
+    .footer-credits-custom {
+        padding: 16px;
+        font-size: 0.8rem;
+    }
+}
+
+/* ============================================================
+   4. TABLET (640px – 1023px)
+   ============================================================ */
+@media (min-width: 640px) and (max-width: 1023px) {
+    :root {
+        --container-px : 20px;
+        --section-my   : 28px;
+        --card-p       : 24px;
+    }
+
+    /* Navbar */
+    .header-container {
+        padding: 12px 20px;
+    }
+
+    .nav-item {
+        padding: 7px 12px;
+        font-size: 0.88rem;
+    }
+
+    /* Hero */
+    .hero-section {
+        padding: 50px 20px;
+    }
+
+    .hero-title {
+        font-size: 2.2rem;
+    }
+
+    /* Page container */
+    .page-container {
+        margin: 28px auto;
+        padding: 0 20px;
+    }
+
+    /* Dashboard grid: 2 col */
+    .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    /* Operator / counter grid: 2 col */
+    .operator-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 20px;
+    }
+
+    /* Display grid: 2 col */
+    .display-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    /* Table: scroll on narrow tablets */
+    .table-responsive {
+        overflow-x: auto;
+    }
+}
+
+/* ============================================================
+   5. DESKTOP (>= 1024px)
+   ============================================================ */
+@media (min-width: 1024px) {
+    :root {
+        --container-px : 24px;
+        --section-my   : 40px;
+        --card-p       : 30px;
+    }
+
+    /* Consistent page padding */
+    .page-container {
+        margin: 40px auto;
+        padding: 0 24px;
+    }
+
+    /* Dashboard grid: 3 col */
+    .stats-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+
+    /* Operator / counter grid */
+    .operator-grid {
+        grid-template-columns: 1fr 320px !important;
+        gap: 24px;
+    }
+
+    /* Display: 3 col */
+    .display-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+}
+
+/* ============================================================
+   6. UTILITY HELPERS (semua breakpoint)
+   ============================================================ */
+
+/* Section vertical spacing helper */
+.section-spacing {
+    margin-top: var(--section-my);
+    margin-bottom: var(--section-my);
+}
+
+/* Consistent card padding using token */
+.card-body {
+    padding: var(--card-p);
+}
+
+/* Responsive grid helpers */
+.grid-1 { display: grid; grid-template-columns: 1fr; gap: var(--space-md); }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-md); }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-md); }
+
+@media (max-width: 639px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+    .grid-3 { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Spacing utility: margin-top */
+.mt-xs { margin-top: var(--space-xs); }
+.mt-sm { margin-top: var(--space-sm); }
+.mt-md { margin-top: var(--space-md); }
+.mt-lg { margin-top: var(--space-lg); }
+
+/* Spacing utility: margin-bottom */
+.mb-xs { margin-bottom: var(--space-xs); }
+.mb-sm { margin-bottom: var(--space-sm); }
+.mb-md { margin-bottom: var(--space-md); }
+.mb-lg { margin-bottom: var(--space-lg); }
+
+/* Hide/show helpers */
+.hide-mobile  { display: none !important; }
+.hide-tablet  { display: initial !important; }
+.hide-desktop { display: initial !important; }
+
+@media (min-width: 640px) {
+    .hide-mobile  { display: initial !important; }
+}
+
+@media (max-width: 1023px) {
+    .hide-tablet { display: none !important; }
+}
+
+@media (min-width: 1024px) {
+    .hide-desktop { display: none !important; }
+}
+
+/* Flex row → col on mobile */
+.flex-row {
+    display: flex;
+    gap: var(--space-md);
+    align-items: flex-start;
+}
+
+@media (max-width: 639px) {
+    .flex-row {
+        flex-direction: column;
+        gap: var(--space-sm);
+    }
+}
+
+/* Full-width button on mobile */
+@media (max-width: 639px) {
+    .btn {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+}

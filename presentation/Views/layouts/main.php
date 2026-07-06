@@ -11,6 +11,8 @@ $isAuthPage = strpos($requestUri, '/login') !== false || strpos($requestUri, '/r
     
     <!-- CSS Stylesheet -->
     <link rel="stylesheet" href="<?= url('/assets/css/style.css') ?>">
+    <!-- Responsive Design System (breakpoints & spacing tokens) -->
+    <link rel="stylesheet" href="<?= url('/assets/css/responsive.css') ?>">
 </head>
 <body>
 
