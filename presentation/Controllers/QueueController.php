@@ -32,8 +32,8 @@ class QueueController extends Controller
         $stmtWaiting->execute();
         $waitingQueues = $stmtWaiting->fetchAll(PDO::FETCH_ASSOC);
 
-        // Dapatkan loket aktif petugas (dari session)
-        $activeCounterId = $_SESSION['active_counter_id'] ?? null;
+        // Dapatkan loket aktif petugas (dari cookie stateless)
+        $activeCounterId = $_COOKIE['silla_counter_id'] ?? null;
         $activeCounter = null;
         $currentQueue = null;
 
@@ -78,10 +78,10 @@ class QueueController extends Controller
         $counterId = $_POST['counter_id'] ?? null;
 
         if ($counterId) {
-            $_SESSION['active_counter_id'] = $counterId;
+            setcookie('silla_counter_id', $counterId, ['expires' => time() + 86400, 'path' => '/', 'secure' => true, 'httponly' => true, 'samesite' => 'Lax']);
             $this->redirect('/queues?success=' . urlencode('Loket berhasil diaktifkan.'));
         } else {
-            unset($_SESSION['active_counter_id']);
+            setcookie('silla_counter_id', '', ['expires' => time() - 3600, 'path' => '/', 'secure' => true, 'httponly' => true, 'samesite' => 'Lax']);
             $this->redirect('/queues?success=' . urlencode('Loket dinonaktifkan.'));
         }
     }
@@ -101,10 +101,24 @@ class QueueController extends Controller
         $stmtDokters = $db->query("SELECT * FROM dokters ORDER BY nama_dokter ASC");
         $dokters = $stmtDokters->fetchAll(PDO::FETCH_ASSOC);
 
-        // Flash data tiket jika baru saja sukses mendaftar
-        $successTicket = $_SESSION['kiosk_success_ticket'] ?? null;
-        $error = $_SESSION['kiosk_error'] ?? null;
-        unset($_SESSION['kiosk_success_ticket'], $_SESSION['kiosk_error']);
+        // Ambil tiket dari DB jika ada ticket_id di URL (setelah redirect dari registerQueue)
+        $successTicket = null;
+        $ticketQueueId = $_GET['ticket_id'] ?? null;
+        if ($ticketQueueId) {
+            $stmtTicketLoad = $db->prepare("
+                SELECT q.*, p.nama, d.nama_dokter, pol.nama_poli
+                FROM queues q
+                JOIN pasiens p ON q.no_rm = p.no_rm
+                JOIN dokters d ON q.kd_dokter = d.kd_dokter
+                JOIN polis pol ON q.kd_poli = pol.kd_poli
+                WHERE q.id = :id
+            ");
+            $stmtTicketLoad->execute(['id' => $ticketQueueId]);
+            $successTicket = $stmtTicketLoad->fetch(PDO::FETCH_ASSOC);
+        }
+
+        $error = $_GET['kiosk_error'] ?? null;
+        if ($error) $error = htmlspecialchars(urldecode($error));
 
         $selectedPoli   = $_GET['kd_poli'] ?? null;
         $selectedDokter = $_GET['kd_dokter'] ?? null;
@@ -274,12 +288,11 @@ class QueueController extends Controller
             $stmtTicket->execute(['id' => $ticketId]);
             $ticketData = $stmtTicket->fetch(PDO::FETCH_ASSOC);
 
-            $_SESSION['kiosk_success_ticket'] = $ticketData;
-            $this->redirect('/kiosk');
+            // Redirect dengan ticket_id agar bisa di-fetch ulang (stateless)
+            $this->redirect('/kiosk?ticket_id=' . urlencode($ticketId));
 
         } catch (Exception $e) {
-            $_SESSION['kiosk_error'] = $e->getMessage();
-            $this->redirect('/kiosk');
+            $this->redirect('/kiosk?kiosk_error=' . urlencode($e->getMessage()));
         }
     }
 
@@ -362,8 +375,9 @@ class QueueController extends Controller
         AuthMiddleware::requireAuth();
         $db = Container::get(PDO::class);
 
-        $counterId = $_SESSION['active_counter_id'] ?? null;
-        $officerUid = $_SESSION['user_uid'];
+        $counterId = $_COOKIE['silla_counter_id'] ?? null;
+        $user = AuthMiddleware::getUser();
+        $officerUid = $user['uid'] ?? 'unknown';
 
         if (!$counterId) {
             $this->redirect('/queues?error=' . urlencode('Pilih loket terlebih dahulu.'));
@@ -432,7 +446,7 @@ class QueueController extends Controller
         $db = Container::get(PDO::class);
 
         $queueId = $_POST['queue_id'] ?? null;
-        $counterId = $_SESSION['active_counter_id'] ?? null;
+        $counterId = $_COOKIE['silla_counter_id'] ?? null;
 
         if (!$queueId) {
             $this->redirect('/queues');
@@ -472,7 +486,7 @@ class QueueController extends Controller
         $db = Container::get(PDO::class);
 
         $queueId = $_POST['queue_id'] ?? null;
-        $counterId = $_SESSION['active_counter_id'] ?? null;
+        $counterId = $_COOKIE['silla_counter_id'] ?? null;
 
         if (!$queueId) {
             $this->redirect('/queues');
