@@ -30,17 +30,26 @@ class AuthMiddleware
         $sig     = hash_hmac('sha256', $json, self::SECRET_KEY);
         $value   = $json . '|' . $sig;
 
-        setcookie(
-            self::COOKIE_NAME,
-            $value,
-            [
+        // Deteksi HTTPS secara akurat (termasuk dibalik proxy / Vercel)
+        $isSecure = false;
+        if (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off') {
+            $isSecure = true;
+        } elseif (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https') {
+            $isSecure = true;
+        }
+
+        // Gunakan sintaks setcookie universal yang didukung semua versi PHP
+        if (PHP_VERSION_ID >= 70300) {
+            setcookie(self::COOKIE_NAME, $value, [
                 'expires'  => time() + self::COOKIE_TTL,
                 'path'     => '/',
                 'httponly' => true,
-                'secure'   => isset($_SERVER['HTTPS']) || (getenv('VERCEL') === '1'),
-                'samesite' => 'Lax',
-            ]
-        );
+                'secure'   => $isSecure,
+                'samesite' => 'Lax'
+            ]);
+        } else {
+            setcookie(self::COOKIE_NAME, $value, time() + self::COOKIE_TTL, '/; samesite=Lax', '', $isSecure, true);
+        }
 
         // Juga sync ke $_COOKIE agar langsung terbaca di request yang sama
         $_COOKIE[self::COOKIE_NAME] = $value;
@@ -51,13 +60,24 @@ class AuthMiddleware
      */
     public static function clearAuthCookie(): void
     {
-        setcookie(self::COOKIE_NAME, '', [
-            'expires'  => time() - 3600,
-            'path'     => '/',
-            'httponly' => true,
-            'secure'   => true,
-            'samesite' => 'Lax',
-        ]);
+        $isSecure = false;
+        if (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off') {
+            $isSecure = true;
+        } elseif (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https') {
+            $isSecure = true;
+        }
+
+        if (PHP_VERSION_ID >= 70300) {
+            setcookie(self::COOKIE_NAME, '', [
+                'expires'  => time() - 3600,
+                'path'     => '/',
+                'httponly' => true,
+                'secure'   => $isSecure,
+                'samesite' => 'Lax'
+            ]);
+        } else {
+            setcookie(self::COOKIE_NAME, '', time() - 3600, '/; samesite=Lax', '', $isSecure, true);
+        }
         unset($_COOKIE[self::COOKIE_NAME]);
     }
 

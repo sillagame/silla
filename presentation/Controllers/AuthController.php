@@ -34,7 +34,7 @@ class AuthController extends Controller
      */
     public function login(): void
     {
-        $email    = trim($_POST['email']    ?? '');
+        $email    = strtolower(trim($_POST['email'] ?? ''));
         $password = $_POST['password'] ?? '';
 
         try {
@@ -86,7 +86,7 @@ class AuthController extends Controller
     public function register(): void
     {
         $name     = trim($_POST['name']     ?? '');
-        $email    = trim($_POST['email']    ?? '');
+        $email    = strtolower(trim($_POST['email'] ?? ''));
         $password = $_POST['password'] ?? '';
         $role     = 'officer';
 
