@@ -46,11 +46,15 @@ $routes = [
         '/display' => [\App\Presentation\Controllers\QueueController::class, 'display'],
         '/display/data' => [\App\Presentation\Controllers\QueueController::class, 'displayData'],
         '/kiosk' => [\App\Presentation\Controllers\QueueController::class, 'kiosk'],
+        '/check' => [\App\Presentation\Controllers\QueueController::class, 'showCheckStatus'],
+        '/schedule' => [\App\Presentation\Controllers\QueueController::class, 'showSchedule'],
         '/counters' => [\App\Presentation\Controllers\CounterController::class, 'index'],
+        '/admin/master' => [\App\Presentation\Controllers\MasterController::class, 'index'],
     ],
     'POST' => [
         '/login' => [\App\Presentation\Controllers\AuthController::class, 'login'],
         '/register' => [\App\Presentation\Controllers\AuthController::class, 'register'],
+        '/kiosk' => [\App\Presentation\Controllers\QueueController::class, 'registerQueue'],
         '/queues/select-counter' => [\App\Presentation\Controllers\QueueController::class, 'selectCounter'],
         '/queues/create' => [\App\Presentation\Controllers\QueueController::class, 'create'],
         '/queues/call' => [\App\Presentation\Controllers\QueueController::class, 'callNext'],
@@ -59,6 +63,22 @@ $routes = [
         '/counters/create' => [\App\Presentation\Controllers\CounterController::class, 'create'],
         '/counters/update' => [\App\Presentation\Controllers\CounterController::class, 'update'],
         '/counters/delete' => [\App\Presentation\Controllers\CounterController::class, 'delete'],
+        
+        '/admin/master/poli/create' => [\App\Presentation\Controllers\MasterController::class, 'createPoli'],
+        '/admin/master/poli/update' => [\App\Presentation\Controllers\MasterController::class, 'updatePoli'],
+        '/admin/master/poli/delete' => [\App\Presentation\Controllers\MasterController::class, 'deletePoli'],
+        
+        '/admin/master/dokter/create' => [\App\Presentation\Controllers\MasterController::class, 'createDokter'],
+        '/admin/master/dokter/update' => [\App\Presentation\Controllers\MasterController::class, 'updateDokter'],
+        '/admin/master/dokter/delete' => [\App\Presentation\Controllers\MasterController::class, 'deleteDokter'],
+        
+        '/admin/master/jadwal/create' => [\App\Presentation\Controllers\MasterController::class, 'createJadwal'],
+        '/admin/master/jadwal/update' => [\App\Presentation\Controllers\MasterController::class, 'updateJadwal'],
+        '/admin/master/jadwal/delete' => [\App\Presentation\Controllers\MasterController::class, 'deleteJadwal'],
+        
+        '/admin/master/pasien/create' => [\App\Presentation\Controllers\MasterController::class, 'createPasien'],
+        '/admin/master/pasien/update' => [\App\Presentation\Controllers\MasterController::class, 'updatePasien'],
+        '/admin/master/pasien/delete' => [\App\Presentation\Controllers\MasterController::class, 'deletePasien'],
     ]
 ];
 

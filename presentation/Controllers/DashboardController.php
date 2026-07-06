@@ -3,101 +3,106 @@
 namespace App\Presentation\Controllers;
 
 use Container;
-use App\Application\UseCases\Queue\GetQueueList;
-use App\Presentation\Middleware\AuthMiddleware;
+use PDO;
+use Exception;
 
 class DashboardController extends Controller
 {
     /**
-     * Halaman Dashboard Utama Petugas/Admin
+     * Halaman Beranda Publik Puskesmas Salem
      */
     public function index(): void
     {
-        AuthMiddleware::requireAuth();
+        $db = Container::get(PDO::class);
 
-        /** @var GetQueueList $getQueuesUseCase */
-        $getQueuesUseCase = Container::get(GetQueueList::class);
-        $queues = $getQueuesUseCase->execute();
-
-        // Hitung statistik antrian hari ini
-        $stats = [
-            'total' => count($queues),
-            'waiting' => 0,
-            'serving' => 0,
-            'completed' => 0,
-            'skipped' => 0,
-            'avg_wait' => 0,
-            'avg_service' => 0
+        // 1. Dapatkan hari ini dalam Bahasa Indonesia
+        $dayNames = [
+            'Sunday'    => 'Minggu',
+            'Monday'    => 'Senin',
+            'Tuesday'   => 'Selasa',
+            'Wednesday' => 'Rabu',
+            'Thursday'  => 'Kamis',
+            'Friday'    => 'Jumat',
+            'Saturday'  => 'Sabtu'
         ];
+        $currentDayEng = date('l');
+        $hariIni = $dayNames[$currentDayEng] ?? 'Senin';
 
-        $waitTimes = [];
-        $serviceTimes = [];
-
-        foreach ($queues as $q) {
-            switch ($q->status) {
-                case 'waiting':
-                    $stats['waiting']++;
-                    break;
-                case 'serving':
-                    $stats['serving']++;
-                    if ($q->waitTimeMinutes !== null) {
-                        $waitTimes[] = $q->waitTimeMinutes;
-                    }
-                    break;
-                case 'completed':
-                    $stats['completed']++;
-                    if ($q->waitTimeMinutes !== null) {
-                        $waitTimes[] = $q->waitTimeMinutes;
-                    }
-                    if ($q->serviceTimeMinutes !== null) {
-                        $serviceTimes[] = $q->serviceTimeMinutes;
-                    }
-                    break;
-                case 'skipped':
-                    $stats['skipped']++;
-                    if ($q->waitTimeMinutes !== null) {
-                        $waitTimes[] = $q->waitTimeMinutes;
-                    }
-                    break;
-            }
-        }
-
-        // Rata-rata waktu tunggu (menit)
-        if (!empty($waitTimes)) {
-            $stats['avg_wait'] = (int) round(array_sum($waitTimes) / count($waitTimes));
-        }
-
-        // Rata-rata waktu pelayanan (menit)
-        if (!empty($serviceTimes)) {
-            $stats['avg_service'] = (int) round(array_sum($serviceTimes) / count($serviceTimes));
-        }
-
-        // Hitung loket aktif
-        $activeCountersCount = 0;
+        // 2. Ambil jadwal dokter hari ini beserta sisa kuota
+        $jadwalHariIni = [];
+        $dokterAktifCount = 0;
         try {
-            /** @var \App\Application\UseCases\Counter\GetCounters $getCountersUseCase */
-            $getCountersUseCase = Container::get(\App\Application\UseCases\Counter\GetCounters::class);
-            $counters = $getCountersUseCase->execute();
-            foreach ($counters as $c) {
-                if ($c->isActive) {
-                    $activeCountersCount++;
-                }
+            $stmt = $db->prepare("
+                SELECT jp.*, d.nama_dokter, p.nama_poli, p.kd_poli
+                FROM jadwal_praktiks jp
+                JOIN dokters d ON jp.kd_dokter = d.kd_dokter
+                JOIN polis p ON d.kd_poli = p.kd_poli
+                WHERE jp.hari = :hari
+                ORDER BY jp.jam_mulai ASC
+            ");
+            $stmt->execute(['hari' => $hariIni]);
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $dokterAktifCount = count($rows);
+
+            foreach ($rows as $row) {
+                // Hitung sisa kuota berdasarkan antrian yang terdaftar hari ini
+                $stmtCount = $db->prepare("
+                    SELECT COUNT(*) 
+                    FROM queues 
+                    WHERE kd_dokter = :kd_dokter AND tanggal = CURRENT_DATE
+                ");
+                $stmtCount->execute(['kd_dokter' => $row['kd_dokter']]);
+                $terdaftar = (int) $stmtCount->fetchColumn();
+
+                $sisaKuota = max(0, (int) $row['kuota'] - $terdaftar);
+
+                $jadwalHariIni[] = [
+                    'kd_dokter'   => $row['kd_dokter'],
+                    'nama_dokter' => $row['nama_dokter'],
+                    'nama_poli'   => $row['nama_poli'],
+                    'kd_poli'     => $row['kd_poli'],
+                    'jam'         => substr($row['jam_mulai'], 0, 5) . ' - ' . substr($row['jam_selesai'], 0, 5),
+                    'kuota'       => $row['kuota'],
+                    'sisa'        => $sisaKuota
+                ];
             }
-        } catch (\Throwable $e) {
-            $activeCountersCount = 0;
+        } catch (Exception $e) {
+            // Silently fallback if table doesn't exist yet
         }
 
-        $success = $_SESSION['auth_success'] ?? null;
-        $error = $_SESSION['error'] ?? null;
-        unset($_SESSION['auth_success'], $_SESSION['error']);
+        // 3. Hitung antrian hari ini & antrian menunggu
+        $antrianHariIniCount = 0;
+        $menungguCount = 0;
+        try {
+            $stmtAntrian = $db->query("
+                SELECT COUNT(*) FROM queues WHERE tanggal = CURRENT_DATE
+            ");
+            $antrianHariIniCount = (int) $stmtAntrian->fetchColumn();
+
+            $stmtWaiting = $db->query("
+                SELECT COUNT(*) FROM queues 
+                WHERE tanggal = CURRENT_DATE AND status IN ('Menunggu', 'waiting')
+            ");
+            $menungguCount = (int) $stmtWaiting->fetchColumn();
+        } catch (Exception $e) {
+            // Silently fallback
+        }
+
+        $success = $_GET['success'] ?? null;
+        $error   = $_GET['error']   ?? null;
 
         $this->render('dashboard/index', [
-            'title' => 'Dashboard - SiLLA',
-            'stats' => $stats,
-            'activeCountersCount' => $activeCountersCount,
-            'queues' => array_slice($queues, -5), // 5 antrian terakhir hari ini
-            'success' => $success,
-            'error' => $error
+            'title'            => 'Puskesmas Salem - Antrian & Jadwal Online',
+            'hariIni'          => $hariIni,
+            'jadwalHariIni'    => $jadwalHariIni,
+            'stats'            => [
+                'total'    => $antrianHariIniCount,
+                'waiting'  => $menungguCount,
+                'dokters'  => $dokterAktifCount
+            ],
+            'success'          => $success ? htmlspecialchars(urldecode($success)) : null,
+            'error'            => $error ? htmlspecialchars(urldecode($error)) : null,
         ]);
     }
 }

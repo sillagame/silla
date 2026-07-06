@@ -136,6 +136,47 @@ class Container
                         ");
                         $stmtInsert->execute(['password' => $hashedPassword]);
                     }
+
+                    // 3. Cek & Seed Polis jika kosong
+                    $stmtPolis = $pdo->query("SELECT COUNT(*) FROM polis");
+                    if ($stmtPolis && $stmtPolis->fetchColumn() == 0) {
+                        $pdo->exec("
+                            INSERT INTO polis (kd_poli, nama_poli) VALUES
+                            ('P001', 'Poli Umum'),
+                            ('P002', 'Poli KIA/KB'),
+                            ('P003', 'Poli Gigi'),
+                            ('P004', 'Poli Lansia')
+                        ");
+                    }
+
+                    // 4. Cek & Seed Dokters jika kosong
+                    $stmtDokters = $pdo->query("SELECT COUNT(*) FROM dokters");
+                    if ($stmtDokters && $stmtDokters->fetchColumn() == 0) {
+                        $pdo->exec("
+                            INSERT INTO dokters (kd_dokter, nama_dokter, kd_poli) VALUES
+                            ('D001', 'dr. Andi Pratama', 'P001'),
+                            ('D002', 'dr. Budi Santoso', 'P002'),
+                            ('D003', 'drg. Siti Rahayu', 'P003'),
+                            ('D004', 'dr. Maya Dewi', 'P004')
+                        ");
+                    }
+
+                    // 5. Cek & Seed Jadwal Praktik jika kosong
+                    $stmtJadwal = $pdo->query("SELECT COUNT(*) FROM jadwal_praktiks");
+                    if ($stmtJadwal && $stmtJadwal->fetchColumn() == 0) {
+                        $pdo->exec("
+                            INSERT INTO jadwal_praktiks (kd_dokter, hari, jam_mulai, jam_selesai, kuota) VALUES
+                            ('D001', 'Senin', '08:00:00', '12:00:00', 20),
+                            ('D001', 'Rabu', '08:00:00', '12:00:00', 20),
+                            ('D001', 'Jumat', '08:00:00', '12:00:00', 20),
+                            ('D002', 'Senin', '09:00:00', '12:00:00', 18),
+                            ('D002', 'Kamis', '09:00:00', '12:00:00', 18),
+                            ('D003', 'Selasa', '08:00:00', '12:00:00', 15),
+                            ('D003', 'Kamis', '08:00:00', '12:00:00', 15),
+                            ('D004', 'Selasa', '08:00:00', '11:00:00', 20),
+                            ('D004', 'Sabtu', '08:00:00', '11:00:00', 20)
+                        ");
+                    }
                 } catch (\Throwable $e) {
                     // Hiraukan error jika table belum terbentuk
                 }

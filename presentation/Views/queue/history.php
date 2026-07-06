@@ -1,62 +1,112 @@
 <!-- Halaman Riwayat Antrian (Admin & Operator) -->
+<style>
+    .print-only-block {
+        display: none;
+    }
+    @media print {
+        header, footer, .btn-print-report, .app-header, .no-print {
+            display: none !important;
+        }
+        .print-only-block {
+            display: block !important;
+        }
+        body {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        .page-container {
+            max-width: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        .glass-panel {
+            border: none !important;
+            box-shadow: none !important;
+            background: none !important;
+            padding: 0 !important;
+        }
+        .custom-table th {
+            background-color: #f1f5f9 !important;
+            color: #000000 !important;
+            border-bottom: 2px solid #000000 !important;
+        }
+        .custom-table td, .custom-table th {
+            padding: 8px !important;
+            border: 1px solid #cbd5e1 !important;
+        }
+    }
+</style>
+
 <div class="page-container">
-    <div style="margin-bottom: 30px;">
-        <h1 style="font-size: 2.2rem; margin-bottom: 5px;">Riwayat Antrian Lengkap</h1>
-        <p style="color: var(--text-secondary);">Daftar riwayat semua antrian hari ini: <?= date('d F Y') ?>.</p>
+    <div style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center;" class="no-print">
+        <div>
+            <h1 style="font-size: 2.2rem; margin-bottom: 5px; font-family: var(--font-heading);">📋 Riwayat Antrian Lengkap</h1>
+            <p style="color: var(--text-secondary);">Daftar riwayat semua antrian hari ini: <?= date('d F Y') ?>.</p>
+        </div>
+        <button onclick="window.print()" class="btn-hero-primary btn-print-report" style="padding: 10px 20px; font-size: 0.88rem; border-radius: 8px;">
+            <span>🖨️</span> Cetak Laporan Harian
+        </button>
     </div>
 
-    <div class="glass-panel">
+    <!-- Judul Laporan Khusus Print -->
+    <div style="display: none; text-align: center; margin-bottom: 30px;" class="print-only-block">
+        <h2 style="font-size: 1.8rem; margin-bottom: 5px; font-family: var(--font-heading);">Laporan Kunjungan & Antrian Harian</h2>
+        <h3 style="font-size: 1.2rem; margin-bottom: 15px; color: var(--text-secondary);">Puskesmas Salem</h3>
+        <p style="font-size: 0.9rem;">Tanggal Cetak: <?= date('d F Y H:i') ?> WIB</p>
+    </div>
+
+    <div class="glass-panel" style="border-radius: 16px; padding: 24px;">
         <?php if (empty($queues)): ?>
             <p style="color: var(--text-secondary); text-align: center; padding: 40px 0;">Belum ada antrian terdaftar hari ini.</p>
         <?php else: ?>
             <div class="table-responsive">
-                <table class="custom-table">
+                <table class="custom-table" style="width: 100%;">
                     <thead>
                         <tr>
-                            <th>Nomor Antrian</th>
-                            <th>Waktu Dibuat</th>
+                            <th>No. Antrian</th>
+                            <th>Kode Pendaftaran</th>
+                            <th>Nama Pasien</th>
+                            <th>Poliklinik</th>
+                            <th>Waktu Daftar</th>
                             <th>Status</th>
-                            <th>Waktu Dipanggil</th>
-                            <th>Waktu Selesai</th>
                             <th>Loket / Counter</th>
-                            <th>Waktu Tunggu</th>
-                            <th>Durasi Layanan</th>
+                            <th>Waktu Panggil</th>
+                            <th>Waktu Selesai</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($queues as $q): ?>
                             <tr>
-                                <td style="font-weight: 800; color: var(--primary-dark); font-size: 1.1rem;">
-                                    <?= htmlspecialchars($q->queueNumber) ?>
+                                <td style="font-weight: 800; color: var(--primary-dark); font-size: 1.1rem; font-family: var(--font-heading);">
+                                    <?= htmlspecialchars($q['queue_number']) ?>
                                 </td>
-                                <td><?= date('H:i:s', strtotime($q->createdAt)) ?></td>
+                                <td style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);">
+                                    <?= htmlspecialchars($q['id']) ?>
+                                </td>
+                                <td style="font-weight: 600; color: var(--text-primary);">
+                                    <?= htmlspecialchars($q['nama_pasien']) ?>
+                                </td>
+                                <td style="font-size: 0.85rem; font-weight: 700; color: var(--primary-dark); text-transform: uppercase;">
+                                    <?= htmlspecialchars($q['nama_poli']) ?>
+                                </td>
+                                <td style="font-size: 0.85rem; color: var(--text-muted);">
+                                    <?= substr($q['jam_ambil'], 0, 5) ?> WIB
+                                </td>
                                 <td>
-                                    <span class="badge badge-<?= $q->status ?>">
-                                        <?= htmlspecialchars($q->status) ?>
+                                    <span class="badge badge-<?= strtolower($q['status'] === 'Selesai' ? 'completed' : ($q['status'] === 'Dipanggil' ? 'serving' : ($q['status'] === 'Lewat' ? 'skipped' : 'waiting'))) ?>">
+                                        <?= htmlspecialchars($q['status']) ?>
                                     </span>
                                 </td>
                                 <td>
-                                    <?= $q->calledAt ? date('H:i:s', strtotime($q->calledAt)) : '<span style="color: var(--text-muted);">-</span>' ?>
+                                    <?= $q['counter_name'] ? htmlspecialchars($q['counter_name']) : '<span style="color: var(--text-muted);">-</span>' ?>
                                 </td>
-                                <td>
-                                    <?= $q->completedAt ? date('H:i:s', strtotime($q->completedAt)) : '<span style="color: var(--text-muted);">-</span>' ?>
+                                <td style="font-size: 0.85rem; color: var(--text-secondary);">
+                                    <?= $q['called_at'] ? date('H:i', strtotime($q['called_at'])) . ' WIB' : '<span style="color: var(--text-muted);">-</span>' ?>
                                 </td>
-                                <td>
-                                    <?= $q->counterName ? htmlspecialchars($q->counterName) : '<span style="color: var(--text-muted);">-</span>' ?>
-                                </td>
-                                <td>
-                                    <?php if ($q->waitTimeMinutes !== null): ?>
-                                        <span><?= $q->waitTimeMinutes ?> mnt</span>
-                                    <?php else: ?>
-                                        <span style="color: var(--text-muted);">-</span>
-                                    <?php endif; ?>
-                                </td>
-                                <td>
-                                    <?php if ($q->serviceTimeMinutes !== null): ?>
-                                        <span><?= $q->serviceTimeMinutes ?> mnt</span>
-                                    <?php else: ?>
-                                        <span style="color: var(--text-muted);">-</span>
-                                    <?php endif; ?>
+                                <td style="font-size: 0.85rem; color: var(--text-secondary);">
+                                    <?= $q['completed_at'] ? date('H:i', strtotime($q['completed_at'])) . ' WIB' : '<span style="color: var(--text-muted);">-</span>' ?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

@@ -23,9 +23,8 @@ class CounterController extends Controller
         $getCountersUseCase = Container::get(GetCounters::class);
         $counters = $getCountersUseCase->execute();
 
-        $success = $_SESSION['counter_success'] ?? null;
-        $error = $_SESSION['counter_error'] ?? null;
-        unset($_SESSION['counter_success'], $_SESSION['counter_error']);
+        $success = isset($_GET['success']) ? htmlspecialchars_decode(urldecode($_GET['success'])) : null;
+        $error   = isset($_GET['error'])   ? htmlspecialchars_decode(urldecode($_GET['error']))   : null;
 
         $this->render('counter/index', [
             'title' => 'Manajemen Loket - SiLLA',
@@ -50,12 +49,10 @@ class CounterController extends Controller
             $createUseCase = Container::get(CreateCounter::class);
             $createUseCase->execute($name, $isActive);
 
-            $_SESSION['counter_success'] = "Loket '{$name}' berhasil dibuat.";
+            $this->redirect('/counters?success=' . urlencode("Loket '{$name}' berhasil dibuat."));
         } catch (Exception $e) {
-            $_SESSION['counter_error'] = $e->getMessage();
+            $this->redirect('/counters?error=' . urlencode($e->getMessage()));
         }
-
-        $this->redirect('/counters');
     }
 
     /**
@@ -75,12 +72,10 @@ class CounterController extends Controller
             $updateUseCase = Container::get(UpdateCounter::class);
             $updateUseCase->execute($id, $name, $isActive, $officerUid);
 
-            $_SESSION['counter_success'] = "Loket '{$name}' berhasil diperbarui.";
+            $this->redirect('/counters?success=' . urlencode("Loket '{$name}' berhasil diperbarui."));
         } catch (Exception $e) {
-            $_SESSION['counter_error'] = $e->getMessage();
+            $this->redirect('/counters?error=' . urlencode($e->getMessage()));
         }
-
-        $this->redirect('/counters');
     }
 
     /**
@@ -97,11 +92,9 @@ class CounterController extends Controller
             $deleteUseCase = Container::get(DeleteCounter::class);
             $deleteUseCase->execute($id);
 
-            $_SESSION['counter_success'] = "Loket berhasil dihapus.";
+            $this->redirect('/counters?success=' . urlencode("Loket berhasil dihapus."));
         } catch (Exception $e) {
-            $_SESSION['counter_error'] = $e->getMessage();
+            $this->redirect('/counters?error=' . urlencode($e->getMessage()));
         }
-
-        $this->redirect('/counters');
     }
 }
