@@ -46,8 +46,14 @@ class MasterController extends Controller
                 END, jp.jam_mulai ASC
         ")->fetchAll(PDO::FETCH_ASSOC);
 
-        // Ambil data Pasien (Batasi 100 terakhir agar cepat)
-        $pasiens = $db->query("SELECT * FROM pasiens ORDER BY created_at DESC LIMIT 100")->fetchAll(PDO::FETCH_ASSOC);
+        // Ambil data Pasien & nomor antrian aktif hari ini jika ada
+        $pasiens = $db->query("
+            SELECT p.*, q.queue_number as today_queue 
+            FROM pasiens p
+            LEFT JOIN queues q ON p.no_rm = q.no_rm AND q.tanggal = CURRENT_DATE
+            ORDER BY p.created_at DESC 
+            LIMIT 100
+        ")->fetchAll(PDO::FETCH_ASSOC);
 
         $success = $_GET['success'] ?? null;
         $error   = $_GET['error']   ?? null;

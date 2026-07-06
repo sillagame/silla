@@ -383,6 +383,7 @@
                         <thead>
                             <tr>
                                 <th>No. RM</th>
+                                <th>Antrian Hari Ini</th>
                                 <th>NIK</th>
                                 <th>Nama Pasien</th>
                                 <th>Tgl Lahir</th>
@@ -395,6 +396,15 @@
                             <?php foreach ($pasiens as $pas): ?>
                                 <tr>
                                     <td class="fw-bold text-primary-dark"><?= htmlspecialchars($pas['no_rm']) ?></td>
+                                    <td>
+                                        <?php if (!empty($pas['today_queue'])): ?>
+                                            <span class="badge badge-serving" style="font-size: 0.85rem; padding: 4px 10px; font-weight: 800; font-family: var(--font-heading);">
+                                                <?= htmlspecialchars($pas['today_queue']) ?>
+                                            </span>
+                                        <?php else: ?>
+                                            <span style="color: var(--text-muted); font-size: 0.85rem;">-</span>
+                                        <?php endif; ?>
+                                    </td>
                                     <td class="text-muted-sm"><?= htmlspecialchars($pas['nik']) ?></td>
                                     <td class="fw-semibold"><?= htmlspecialchars($pas['nama']) ?></td>
                                     <td class="text-muted-sm"><?= date('d-m-Y', strtotime($pas['tgl_lahir'])) ?></td>
@@ -402,7 +412,6 @@
                                     <td class="text-muted-sm"><?= htmlspecialchars($pas['no_telp']) ?></td>
                                     <td style="text-align: right;">
                                         <div class="table-actions">
-                                            <a href="<?= url('/kiosk?nik=' . urlencode($pas['nik'])) ?>" class="btn btn-success btn-sm">Daftar Antrian</a>
                                             <button type="button" class="btn btn-secondary btn-sm" onclick="loadPasienEdit('<?= htmlspecialchars($pas['no_rm']) ?>', '<?= htmlspecialchars($pas['nik']) ?>', '<?= htmlspecialchars($pas['nama']) ?>', '<?= htmlspecialchars($pas['tgl_lahir']) ?>', '<?= htmlspecialchars($pas['jk']) ?>', '<?= htmlspecialchars($pas['no_telp']) ?>', '<?= htmlspecialchars($pas['no_bpjs']) ?>', '<?= htmlspecialchars(json_encode($pas['alamat'])) ?>')">Edit</button>
                                             <form action="<?= url('/admin/master/pasien/delete') ?>" method="POST" onsubmit="return confirm('Hapus data pasien ini? Seluruh riwayat antrian pasien ini juga akan terhapus.')" style="margin:0;">
                                                 <input type="hidden" name="no_rm" value="<?= htmlspecialchars($pas['no_rm']) ?>">
@@ -420,7 +429,12 @@
             <div>
                 <!-- Add Form -->
                 <div class="glass-panel" id="pasien-create-panel" style="border-radius: 16px;">
-                    <h3 class="glass-panel-title" style="font-family: var(--font-heading);">Tambah Pasien Baru</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 12px; margin-bottom: 20px;">
+                        <h3 style="margin: 0; font-size: 1.35rem; font-weight: 700; color: var(--text-primary); font-family: var(--font-heading);">Tambah Pasien Baru</h3>
+                        <a href="<?= url('/kiosk') ?>" class="btn btn-success btn-sm" style="font-weight: 700; text-decoration: none;">
+                            🎟️ Daftar Antrian
+                        </a>
+                    </div>
                     <form action="<?= url('/admin/master/pasien/create') ?>" method="POST" autocomplete="off">
                         <div class="form-group">
                             <label for="nik_pas_add" class="form-label">NIK (16 digit KTP)</label>
