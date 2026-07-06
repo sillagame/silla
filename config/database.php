@@ -19,7 +19,7 @@ return [
     'port'     => getenv('DB_PORT')     ?: ($driver === 'pgsql' ? '5432' : '3306'),
     'dbname'   => getenv('DB_DATABASE') ?: 'postgres',
     'username' => getenv('DB_USERNAME') ?: 'postgres.mqaqxjwyrlrckplbnksc', // Format pooler: postgres.[project-id]
-    'password' => getenv('DB_PASSWORD') ?: 'faiz,cirebon',
+    'password' => getenv('DB_PASSWORD') ?: 'silagameorg123',
     'charset'  => $driver === 'pgsql' ? 'utf8' : 'utf8mb4',
     'options'  => [
         PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
