@@ -20,16 +20,16 @@ class AuthController extends Controller
             $this->redirect('/dashboard');
         }
 
-        $error = $_SESSION['auth_error'] ?? null;
-        $success = $_SESSION['auth_success'] ?? null;
-        
-        // Clear message session setelah dibaca
+        // Baca pesan dari query param (kompatibel dengan serverless Vercel)
+        // Fallback ke session untuk kompatibilitas lokal
+        $error   = isset($_GET['error'])   ? htmlspecialchars_decode(urldecode($_GET['error']))   : ($_SESSION['auth_error']   ?? null);
+        $success = isset($_GET['success']) ? htmlspecialchars_decode(urldecode($_GET['success'])) : ($_SESSION['auth_success'] ?? null);
         unset($_SESSION['auth_error'], $_SESSION['auth_success']);
 
         $this->render('auth/login', [
-            'title' => 'Login - SiLLA',
-            'error' => $error,
-            'success' => $success
+            'title'   => 'Login - SiLLA',
+            'error'   => $error,
+            'success' => $success,
         ]);
     }
 
@@ -38,7 +38,7 @@ class AuthController extends Controller
      */
     public function login(): void
     {
-        $email = $_POST['email'] ?? '';
+        $email    = $_POST['email']    ?? '';
         $password = $_POST['password'] ?? '';
 
         try {
@@ -46,25 +46,20 @@ class AuthController extends Controller
             $loginUseCase = Container::get(LoginUser::class);
             $result = $loginUseCase->execute($email, $password);
 
-            // Simpan detail user & token ke session
-            $_SESSION['user_uid'] = $result['user']->uid;
+            // Simpan detail user ke session
+            $_SESSION['user_uid']   = $result['user']->uid;
             $_SESSION['user_email'] = $result['user']->email;
-            $_SESSION['user_name'] = $result['user']->displayName;
-            $_SESSION['user_role'] = $result['user']->role;
-            $_SESSION['firebase_token'] = $result['idToken'];
-            $_SESSION['refresh_token'] = $result['refreshToken'];
+            $_SESSION['user_name']  = $result['user']->displayName;
+            $_SESSION['user_role']  = $result['user']->role;
 
-            $_SESSION['auth_success'] = "Selamat datang kembali, " . $result['user']->displayName . "!";
             $this->redirect('/dashboard');
 
         } catch (Exception $e) {
             $msg = $e->getMessage();
-            // Deteksi error koneksi database — tampilkan pesan yang lebih ramah
             if (str_contains($msg, 'SQLSTATE') || str_contains($msg, 'Connection') || str_contains($msg, 'could not')) {
                 $msg = 'Gagal terhubung ke server database. Periksa konfigurasi koneksi atau coba beberapa saat lagi.';
             }
-            $_SESSION['auth_error'] = $msg;
-            $this->redirect('/login');
+            $this->redirect('/login?error=' . urlencode($msg));
         }
     }
 
@@ -77,12 +72,12 @@ class AuthController extends Controller
             $this->redirect('/dashboard');
         }
 
-        $error = $_SESSION['auth_error'] ?? null;
+        $error = isset($_GET['error']) ? htmlspecialchars_decode(urldecode($_GET['error'])) : ($_SESSION['auth_error'] ?? null);
         unset($_SESSION['auth_error']);
 
         $this->render('auth/register', [
             'title' => 'Pendaftaran Akun - SiLLA',
-            'error' => $error
+            'error' => $error,
         ]);
     }
 
@@ -91,29 +86,24 @@ class AuthController extends Controller
      */
     public function register(): void
     {
-        $name = $_POST['name'] ?? '';
-        $email = $_POST['email'] ?? '';
+        $name     = $_POST['name']     ?? '';
+        $email    = $_POST['email']    ?? '';
         $password = $_POST['password'] ?? '';
-        
-        // Pendaftaran via web default role-nya adalah 'officer' (petugas)
-        // Admin didaftarkan secara terpisah atau diubah rolenya di DB
-        $role = 'officer'; 
+        $role     = 'officer';
 
         try {
             /** @var RegisterUser $registerUseCase */
             $registerUseCase = Container::get(RegisterUser::class);
             $registerUseCase->execute($name, $email, $password, $role);
 
-            $_SESSION['auth_success'] = "Pendaftaran berhasil! Silakan masuk menggunakan akun baru Anda.";
-            $this->redirect('/login');
+            $this->redirect('/login?success=' . urlencode('Pendaftaran berhasil! Silakan masuk menggunakan akun baru Anda.'));
 
         } catch (Exception $e) {
             $msg = $e->getMessage();
             if (str_contains($msg, 'SQLSTATE') || str_contains($msg, 'Connection') || str_contains($msg, 'could not')) {
                 $msg = 'Gagal terhubung ke server database. Periksa konfigurasi koneksi atau coba beberapa saat lagi.';
             }
-            $_SESSION['auth_error'] = $msg;
-            $this->redirect('/register');
+            $this->redirect('/register?error=' . urlencode($msg));
         }
     }
 
@@ -126,9 +116,6 @@ class AuthController extends Controller
         $logoutUseCase = Container::get(LogoutUser::class);
         $logoutUseCase->execute();
 
-        // Start session baru untuk menyimpan pesan sukses logout
-        session_start();
-        $_SESSION['auth_success'] = "Anda berhasil keluar dari sistem.";
-        $this->redirect('/login');
+        $this->redirect('/login?success=' . urlencode('Anda berhasil keluar dari sistem.'));
     }
 }

@@ -71,6 +71,12 @@ $appConfig = require __DIR__ . '/config/app.php';
 date_default_timezone_set($appConfig['timezone'] ?? 'Asia/Jakarta');
 
 if (session_status() === PHP_SESSION_NONE) {
+    // Di Vercel (serverless), hanya /tmp yang bisa ditulis
+    // Atur session save path agar PHP session berfungsi
+    if (isset($_SERVER['VERCEL']) || getenv('VERCEL') === '1') {
+        ini_set('session.save_handler', 'files');
+        ini_set('session.save_path', '/tmp');
+    }
     session_name($appConfig['session']['name'] ?? 'silla_session');
     session_set_cookie_params($appConfig['session']['lifetime'] ?? 7200);
     session_start();
