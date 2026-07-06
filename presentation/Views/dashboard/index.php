@@ -58,9 +58,9 @@
 
     <!-- Jadwal Hari Ini Section -->
     <div class="section-spacing">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <div class="flex-row" style="justify-content: space-between; align-items: center; margin-bottom: 24px;">
             <h2 class="section-title" style="margin-bottom: 0;">Jadwal Hari Ini</h2>
-            <a href="<?= url('/schedule') ?>" style="color: var(--primary); text-decoration: none; font-weight: 700; font-size: 0.95rem;">Lihat semua &rarr;</a>
+            <a href="<?= url('/schedule') ?>" style="color: var(--primary); text-decoration: none; font-weight: 700; font-size: 0.95rem; flex-shrink: 0;">Lihat semua &rarr;</a>
         </div>
 
         <?php if (empty($jadwalHariIni)): ?>
@@ -109,7 +109,7 @@
     <div class="section-spacing" style="background-color: #f8fafc; border-radius: 20px; padding: 40px var(--container-px); border: 1px solid var(--border-light);">
         <h2 class="section-title" style="text-align: center; margin-bottom: 40px; font-family: var(--font-heading);">Cara Daftar Antrian</h2>
         
-        <div class="grid-3" style="gap: 30px;">
+        <div class="grid-3">
             <!-- Langkah 1 -->
             <div style="text-align: center; display: flex; flex-direction: column; align-items: center;">
                 <div style="width: 50px; height: 50px; background-color: #e0f2fe; color: #0284c7; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: bold; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(2, 132, 199, 0.15);">

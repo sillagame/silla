@@ -50,6 +50,8 @@ body {
     display: flex;
     flex-direction: column;
     overflow-x: hidden;
+    /* Prevent any child from expanding beyond viewport width */
+    max-width: 100vw;
 }
 
 /* Typography */
@@ -410,12 +412,8 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
 }
 
-/* Content Container (Standard Pages) */
-.page-container {
-    max-width: 1200px;
-    margin: 40px auto;
-    padding: 0 24px;
-}
+/* Content Container — fully managed in responsive.css via CSS tokens.
+   This stub exists only for specificity; do NOT add hardcoded values here. */
 
 /* Alerts */
 .alert {

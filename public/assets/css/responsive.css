@@ -1,22 +1,23 @@
 /*
  * ============================================================
- *  SiLLA — Global Responsive Design System v2
+ *  SiLLA — Responsive Design System v3
+ *
+ *  Strategy: Mobile-first. All sizes via CSS tokens.
+ *  Overflow is PREVENTED at every level — never rely on
+ *  a single overflow-x:hidden on body.
  *
  *  Breakpoints:
- *    Mobile  : < 640px
- *    Tablet  : 640px – 1023px
- *    Desktop : >= 1024px
- *
- *  All sizes use CSS Custom Properties (tokens).
- *  Never hardcode px values in views — use the classes below.
+ *    xs     : < 480px   (small phones)
+ *    mobile : < 640px
+ *    tablet : 640–1023px
+ *    desktop: >= 1024px
  * ============================================================
  */
 
 /* ============================================================
-   1. DESIGN TOKENS — Single Source of Truth
+   1. DESIGN TOKENS
    ============================================================ */
 :root {
-    /* Spacing scale */
     --space-2xs : 4px;
     --space-xs  : 8px;
     --space-sm  : 16px;
@@ -24,15 +25,11 @@
     --space-lg  : 40px;
     --space-xl  : 64px;
 
-    /* Container */
     --container-px        : 24px;
     --container-max-width : 1400px;
+    --section-my          : 40px;
+    --card-p              : 28px;
 
-    /* Page-level vertical rhythm */
-    --section-my : 40px;
-    --card-p     : 28px;
-
-    /* Typography scale */
     --text-xs   : 0.75rem;
     --text-sm   : 0.85rem;
     --text-base : 0.95rem;
@@ -42,18 +39,13 @@
     --text-3xl  : 2.2rem;
     --text-4xl  : 2.8rem;
 
-    /* Border radii */
     --radius-sm  : 8px;
     --radius-md  : 12px;
     --radius-lg  : 16px;
     --radius-xl  : 20px;
     --radius-full: 9999px;
-
-    /* Page header height (navbar) — used by sticky calcs */
-    --header-h: 64px;
 }
 
-/* Tablet overrides */
 @media (min-width: 640px) and (max-width: 1023px) {
     :root {
         --container-px : 20px;
@@ -62,26 +54,25 @@
     }
 }
 
-/* Mobile overrides */
 @media (max-width: 639px) {
     :root {
         --container-px : 16px;
         --section-my   : 20px;
         --card-p       : 16px;
-        --space-lg     : 28px;
-        --space-xl     : 40px;
-        --text-3xl     : 1.7rem;
-        --text-4xl     : 2rem;
+        --space-lg     : 24px;
+        --text-3xl     : 1.6rem;
+        --text-4xl     : 1.9rem;
     }
 }
 
 /* ============================================================
-   2. GLOBAL RESETS & BASE
+   2. HARD OVERFLOW PREVENTION
+   Applied to every possible container that could bleed out.
    ============================================================ */
 html {
     box-sizing: border-box;
-    /* Prevent horizontal scroll at root */
     overflow-x: hidden;
+    max-width: 100%;
 }
 
 *, *::before, *::after {
@@ -90,12 +81,32 @@ html {
 
 body {
     overflow-x: hidden;
+    max-width: 100vw;
     width: 100%;
 }
 
-img, svg, video, canvas, audio, iframe, embed, object {
+/* Every structural wrapper clips itself */
+.main-content-layout,
+.page-container,
+.container,
+.glass-panel,
+.hero-section,
+.stats-bar,
+.stats-bar-container,
+.app-header,
+.header-container,
+footer,
+.footer-credits-custom {
+    max-width: 100%;
+    /* Clip overflowing children, but allow internal scroll via .table-responsive */
+    overflow-x: clip;
+}
+
+/* Images / media: never exceed their container */
+img, svg, video, canvas, iframe, embed, object, picture {
     display: block;
     max-width: 100%;
+    height: auto;
 }
 
 /* ============================================================
@@ -109,79 +120,106 @@ img, svg, video, canvas, audio, iframe, embed, object {
     margin-right: auto;
     padding-left: var(--container-px);
     padding-right: var(--container-px);
+    /* Override the clip from section 2 for child scrollable areas */
+    overflow-x: visible;
 }
 
 .page-container {
     padding-top: var(--section-my);
     padding-bottom: var(--section-my);
+    /* Re-clip at this level so children can't escape page */
+    overflow-x: clip;
 }
 
-/* Page header row: title on left, action button on right.
-   Stacks vertically on mobile. */
+/* ============================================================
+   4. PAGE HEADER — title + action button
+      On desktop: side by side.
+      On mobile:  stacks vertically, full width button.
+   ============================================================ */
 .page-header {
     display: flex;
-    flex-wrap: wrap;
     gap: var(--space-sm);
-    justify-content: space-between;
-    align-items: flex-start;
     margin-bottom: var(--space-md);
+    /* Mobile-first: ALWAYS stack vertically */
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .page-header-title {
-    flex: 1 1 200px;
-    min-width: 0; /* prevent flex child overflow */
+    width: 100%;
+    min-width: 0;
 }
 
 .page-header-title h1 {
     font-size: var(--text-3xl);
     margin-bottom: 4px;
     word-break: break-word;
+    overflow-wrap: break-word;
     hyphens: auto;
+    line-height: 1.25;
 }
 
 .page-header-title p {
     color: var(--text-secondary);
     font-size: var(--text-base);
+    word-break: break-word;
 }
 
 .page-header-action {
-    flex-shrink: 0;
+    width: 100%;
 }
 
-@media (max-width: 639px) {
+.page-header-action .btn,
+.page-header-action a.btn {
+    display: inline-flex;
+    width: auto; /* auto on mobile = fits content */
+}
+
+/* On tablet+: side by side */
+@media (min-width: 640px) {
     .page-header {
-        gap: var(--space-xs);
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: space-between;
     }
 
-    .page-header-title h1 {
-        font-size: 1.5rem;
+    .page-header-title {
+        flex: 1 1 0%;
     }
 
     .page-header-action {
-        width: 100%;
+        width: auto;
+        flex-shrink: 0;
     }
 
-    .page-header-action .btn,
-    .page-header-action a {
-        width: 100%;
-        text-align: center;
-        justify-content: center;
+    .page-header-title h1 {
+        font-size: var(--text-3xl);
+    }
+}
+
+@media (min-width: 1024px) {
+    .page-header-title h1 {
+        font-size: var(--text-4xl);
     }
 }
 
 /* ============================================================
-   4. TAB BAR — horizontal scroll on small screens
+   5. TAB BAR — scrolls horizontally inside itself,
+      NEVER causes page-level overflow
    ============================================================ */
 .tab-bar {
     display: flex;
-    gap: 4px;
+    gap: 2px;
     border-bottom: 2px solid var(--border-light);
     margin-bottom: var(--space-md);
-    padding-bottom: 0;
+    /* Key: scroll inside the tab bar, not the page */
     overflow-x: auto;
-    overflow-y: hidden;
+    overflow-y: visible;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    /* Prevent the tab bar itself from expanding the page */
+    width: 100%;
+    max-width: 100%;
 }
 
 .tab-bar::-webkit-scrollbar {
@@ -191,164 +229,167 @@ img, svg, video, canvas, audio, iframe, embed, object {
 .tab-item {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 10px 18px;
+    gap: 5px;
+    padding: 10px 16px;
     font-size: var(--text-sm);
     font-weight: 700;
     color: var(--text-secondary);
     text-decoration: none;
     border-bottom: 3px solid transparent;
-    white-space: nowrap;
+    white-space: nowrap;   /* Must be nowrap so items line up in one row */
+    flex-shrink: 0;
     transition: color 0.2s, border-color 0.2s;
-    margin-bottom: -2px; /* overlap container border */
+    margin-bottom: -2px;
     border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    cursor: pointer;
 }
 
 .tab-item:hover {
     color: var(--primary-dark);
-    background: rgba(88, 169, 62, 0.05);
+    background: rgba(88, 169, 62, 0.06);
 }
 
 .tab-item.active {
     color: var(--primary-dark);
     border-bottom-color: var(--primary);
+    background: rgba(88, 169, 62, 0.04);
 }
 
-@media (max-width: 639px) {
+@media (max-width: 479px) {
     .tab-item {
-        padding: 8px 14px;
-        font-size: 0.8rem;
+        padding: 8px 12px;
+        font-size: 0.78rem;
     }
 }
 
 /* ============================================================
-   5. RESPONSIVE GRID LAYOUTS
+   6. MASTER DATA LAYOUT — list + sidebar form
+      Desktop: 2fr 1fr  |  Tablet & Mobile: stacked
    ============================================================ */
-
-/* Generic column grids */
-.grid-1 { display: grid; grid-template-columns: 1fr; gap: var(--space-md); }
-.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-md); }
-.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-md); }
-.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-md); }
-
-/* Master-data layout: list (2fr) + sidebar form (1fr).
-   Uses named class so breakpoints can target it specifically. */
 .master-layout {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    /* Mobile first: 1 column */
+    grid-template-columns: 1fr;
     gap: var(--space-md);
     align-items: start;
+    /* Prevent grid from overflowing */
+    width: 100%;
+    min-width: 0;
 }
 
-/* Stats/dashboard quick cards */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: var(--space-sm);
+/* Children must not overflow the grid cell */
+.master-layout > * {
+    min-width: 0;
+    overflow: hidden;
 }
 
-/* Operator panel: queue list left, controls right */
-.operator-layout {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: var(--space-md);
-    align-items: start;
+/* Give table panel the scroll context */
+.master-layout > *:first-child {
+    overflow: visible; /* Allow table-responsive to scroll internally */
 }
 
-/* Display monitor grid */
-.display-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: var(--space-md);
-}
-
-/* Dashboard overview grid */
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-md);
-}
-
-/* ── Tablet (640–1023px) ── */
-@media (min-width: 640px) and (max-width: 1023px) {
+@media (min-width: 1024px) {
     .master-layout {
-        grid-template-columns: 1fr;
-    }
-
-    .operator-layout {
-        grid-template-columns: 1fr;
-    }
-
-    .dashboard-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .grid-3 {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .grid-4 {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-/* ── Mobile (<640px) ── */
-@media (max-width: 639px) {
-    .master-layout,
-    .operator-layout,
-    .dashboard-grid,
-    .grid-2,
-    .grid-3,
-    .grid-4 {
-        grid-template-columns: 1fr;
+        grid-template-columns: 2fr 1fr;
     }
 }
 
 /* ============================================================
-   6. TABLES — always scrollable, never overflow page
+   7. TABLE — scrollable within its wrapper, never overflows page
    ============================================================ */
 .table-responsive {
     width: 100%;
+    max-width: 100%;
     overflow-x: auto;
+    overflow-y: visible;
     -webkit-overflow-scrolling: touch;
     border-radius: var(--radius-md);
+    /* Contains the table scroll without leaking to page */
+    display: block;
 }
 
-/* Give tables a minimum width so columns don't crush */
+/* Minimum width so columns don't crush on desktop, scroll on mobile */
 .table-responsive .custom-table {
-    min-width: 480px;
+    min-width: 420px;
+    width: 100%;
 }
 
-/* Action buttons inside table cells — stack on very small screens */
+/* Action buttons column: wrap gracefully */
 .table-actions {
     display: inline-flex;
     gap: 6px;
     flex-wrap: wrap;
     justify-content: flex-end;
-}
-
-@media (max-width: 479px) {
-    .table-actions {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .table-actions .btn,
-    .table-actions button {
-        width: 100%;
-        text-align: center;
-    }
+    align-items: center;
 }
 
 /* ============================================================
-   7. GLASS PANEL / CARD
+   8. GRID UTILITIES
    ============================================================ */
-.glass-panel {
-    padding: var(--card-p);
+.grid-1 { display: grid; grid-template-columns: 1fr; gap: var(--space-md); width: 100%; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-md); width: 100%; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-md); width: 100%; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-md); width: 100%; }
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--space-sm);
+    width: 100%;
+}
+
+.operator-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+    align-items: start;
+    width: 100%;
+}
+
+.display-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--space-md);
+    width: 100%;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-md);
+    width: 100%;
+}
+
+/* Tablet */
+@media (min-width: 640px) and (max-width: 1023px) {
+    .grid-3 { grid-template-columns: repeat(2, 1fr); }
+    .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
+    .operator-layout { grid-template-columns: 1fr; }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-4 { grid-template-columns: repeat(4, 1fr); }
+    .dashboard-grid { grid-template-columns: repeat(3, 1fr); }
+    .operator-layout { grid-template-columns: 2fr 1fr; }
+}
+
+/* Mobile: everything 1 column */
+@media (max-width: 639px) {
+    .grid-2,
+    .grid-3,
+    .grid-4,
+    .dashboard-grid,
+    .operator-layout {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* ============================================================
-   8. NAVBAR
+   9. NAVBAR / HEADER
    ============================================================ */
 .header-container {
     max-width: var(--container-max-width);
@@ -357,63 +398,74 @@ img, svg, video, canvas, audio, iframe, embed, object {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    /* ensure it doesn't overflow on tiny screens */
-    flex-wrap: nowrap;
     gap: var(--space-xs);
-    min-width: 0;
+    width: 100%;
+    max-width: 100%;
 }
 
 .logo-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
     min-width: 0;
-    flex-shrink: 1;
+    flex: 1 1 auto;
+    overflow: hidden;
+}
+
+.logo-text-group {
+    min-width: 0;
+    overflow: hidden;
 }
 
 .logo-title {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 200px;
 }
 
-@media (max-width: 399px) {
-    .logo-subtitle {
-        display: none;
-    }
+.burger-menu-btn {
+    flex-shrink: 0;
+}
 
-    .logo-title {
-        font-size: 1.1rem;
-    }
+@media (max-width: 360px) {
+    .logo-subtitle { display: none; }
+    .logo-title    { font-size: 1rem; }
 }
 
 /* ============================================================
-   9. HERO SECTION
+   10. HERO SECTION
    ============================================================ */
 .hero-section {
     padding: 60px var(--container-px);
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 .hero-container-inner {
     max-width: 1200px;
     margin: 0 auto;
+    width: 100%;
+}
+
+.hero-title {
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+.hero-actions {
+    display: flex;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
 }
 
 @media (max-width: 639px) {
-    .hero-section {
-        padding: 40px var(--container-px);
-    }
-
-    .hero-title {
-        font-size: var(--text-3xl);
-        line-height: 1.2;
-    }
-
-    .hero-desc {
-        font-size: var(--text-base);
-    }
-
-    .hero-actions {
-        flex-direction: column;
-        gap: var(--space-xs);
-    }
+    .hero-section  { padding: 40px var(--container-px); }
+    .hero-title    { font-size: var(--text-3xl); line-height: 1.2; }
+    .hero-desc     { font-size: var(--text-base); }
+    .hero-actions  { flex-direction: column; }
 
     .btn-hero-primary,
     .btn-hero-secondary {
@@ -424,23 +476,24 @@ img, svg, video, canvas, audio, iframe, embed, object {
 }
 
 @media (min-width: 640px) and (max-width: 1023px) {
-    .hero-section {
-        padding: 50px var(--container-px);
-    }
-
-    .hero-title {
-        font-size: 2.2rem;
-    }
+    .hero-section { padding: 50px var(--container-px); }
+    .hero-title   { font-size: 2.2rem; }
 }
 
 /* ============================================================
-   10. STATS BAR
+   11. STATS BAR
    ============================================================ */
+.stats-bar {
+    width: 100%;
+    overflow: hidden;
+}
+
 .stats-bar-container {
     max-width: 1200px;
     margin: 0 auto;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+    width: 100%;
 }
 
 @media (max-width: 639px) {
@@ -454,28 +507,32 @@ img, svg, video, canvas, audio, iframe, embed, object {
         padding: 18px var(--container-px);
     }
 
-    .stat-num {
-        font-size: 2.2rem;
-    }
-}
-
-@media (min-width: 640px) and (max-width: 1023px) {
-    .stats-bar-container {
-        grid-template-columns: repeat(3, 1fr);
-    }
+    .stat-num { font-size: 2rem; }
 }
 
 /* ============================================================
-   11. FOOTER
+   12. GLASS PANEL
+   ============================================================ */
+.glass-panel {
+    padding: var(--card-p);
+    /* Allow internal table scroll */
+    overflow: visible;
+}
+
+/* ============================================================
+   13. FOOTER
    ============================================================ */
 .footer-credits-custom {
     padding: 40px var(--container-px);
+    width: 100%;
+    overflow: hidden;
 }
 
 .footer-container {
     max-width: 1200px;
     margin: 0 auto;
     text-align: center;
+    width: 100%;
 }
 
 .footer-info-row {
@@ -485,52 +542,24 @@ img, svg, video, canvas, audio, iframe, embed, object {
     gap: var(--space-md);
     margin-bottom: var(--space-md);
     font-size: var(--text-sm);
-    opacity: 0.9;
 }
 
 @media (max-width: 639px) {
+    .footer-credits-custom { padding: 28px var(--container-px); }
     .footer-info-row {
         flex-direction: column;
         gap: var(--space-xs);
         align-items: center;
     }
-
-    .footer-credits-custom {
-        padding: 28px var(--container-px);
-    }
 }
 
 /* ============================================================
-   12. KIOSK PAGE
-   ============================================================ */
-.kiosk-card {
-    padding: 48px var(--space-md);
-    max-width: 540px;
-    margin: var(--section-my) auto;
-}
-
-@media (max-width: 639px) {
-    .kiosk-card {
-        padding: 28px var(--container-px);
-        margin: var(--section-my) var(--container-px);
-    }
-
-    .kiosk-btn {
-        width: 180px;
-        height: 180px;
-        font-size: 1.15rem;
-    }
-
-    .kiosk-btn-icon {
-        font-size: 2.2rem;
-    }
-}
-
-/* ============================================================
-   13. AUTH CARD
+   14. AUTH CARD
    ============================================================ */
 .auth-wrapper {
     padding: var(--space-md) var(--container-px);
+    width: 100%;
+    overflow: hidden;
 }
 
 @media (max-width: 639px) {
@@ -541,42 +570,33 @@ img, svg, video, canvas, audio, iframe, embed, object {
 }
 
 /* ============================================================
-   14. UTILITY CLASSES
+   15. KIOSK
    ============================================================ */
+@media (max-width: 639px) {
+    .kiosk-card {
+        margin: var(--section-my) var(--container-px);
+        padding: 28px var(--container-px);
+    }
 
-/* Spacing */
-.mt-xs  { margin-top:    var(--space-xs);  }
-.mt-sm  { margin-top:    var(--space-sm);  }
-.mt-md  { margin-top:    var(--space-md);  }
-.mt-lg  { margin-top:    var(--space-lg);  }
-.mb-xs  { margin-bottom: var(--space-xs);  }
-.mb-sm  { margin-bottom: var(--space-sm);  }
-.mb-md  { margin-bottom: var(--space-md);  }
-.mb-lg  { margin-bottom: var(--space-lg);  }
-.pt-sm  { padding-top:   var(--space-sm);  }
-.pb-sm  { padding-bottom:var(--space-sm);  }
-.gap-xs { gap: var(--space-xs); }
-.gap-sm { gap: var(--space-sm); }
-.gap-md { gap: var(--space-md); }
+    .kiosk-btn {
+        width: 180px;
+        height: 180px;
+        font-size: 1.1rem;
+    }
 
-/* Flex helpers */
-.flex         { display: flex; }
-.flex-col     { display: flex; flex-direction: column; }
-.flex-wrap    { flex-wrap: wrap; }
-.items-center { align-items: center; }
-.items-start  { align-items: flex-start; }
-.justify-between { justify-content: space-between; }
-.justify-center  { justify-content: center; }
-.flex-1       { flex: 1; }
-.shrink-0     { flex-shrink: 0; }
-.min-w-0      { min-width: 0; }
+    .kiosk-btn-icon { font-size: 2.2rem; }
+}
 
-/* Responsive flex-row: horizontal on tablet+, vertical on mobile */
+/* ============================================================
+   16. FLEX ROW UTILITY
+   ============================================================ */
 .flex-row {
     display: flex;
     gap: var(--space-md);
     align-items: flex-start;
     flex-wrap: wrap;
+    width: 100%;
+    max-width: 100%;
 }
 
 @media (max-width: 639px) {
@@ -586,27 +606,37 @@ img, svg, video, canvas, audio, iframe, embed, object {
     }
 }
 
-/* Text overflow helpers */
-.truncate {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+/* ============================================================
+   17. SPACING UTILITIES
+   ============================================================ */
+.mt-xs  { margin-top:    var(--space-xs); }
+.mt-sm  { margin-top:    var(--space-sm); }
+.mt-md  { margin-top:    var(--space-md); }
+.mt-lg  { margin-top:    var(--space-lg); }
+.mb-xs  { margin-bottom: var(--space-xs); }
+.mb-sm  { margin-bottom: var(--space-sm); }
+.mb-md  { margin-bottom: var(--space-md); }
+.mb-lg  { margin-bottom: var(--space-lg); }
+.gap-xs { gap: var(--space-xs); }
+.gap-sm { gap: var(--space-sm); }
+.gap-md { gap: var(--space-md); }
+
+/* ============================================================
+   18. VISIBILITY HELPERS
+   ============================================================ */
+@media (max-width: 639px) {
+    .hide-mobile { display: none !important; }
+}
+@media (min-width: 640px) and (max-width: 1023px) {
+    .hide-tablet { display: none !important; }
+}
+@media (min-width: 1024px) {
+    .hide-desktop { display: none !important; }
 }
 
-.break-word {
-    word-break: break-word;
-    overflow-wrap: break-word;
-}
-
-/* Section spacing */
-.section-spacing {
-    margin-top: var(--section-my);
-    margin-bottom: var(--section-my);
-}
-
-/* Button full-width helpers */
-.btn-full { width: 100%; justify-content: center; }
-
+/* ============================================================
+   19. BUTTON MOBILE HELPERS
+   ============================================================ */
 @media (max-width: 639px) {
     .btn-block-mobile {
         width: 100%;
@@ -615,51 +645,13 @@ img, svg, video, canvas, audio, iframe, embed, object {
     }
 }
 
-/* Hide/Show at breakpoints */
-.show-mobile  { display: none  !important; }
-.show-tablet  { display: none  !important; }
-.hide-mobile  { display: block !important; }
-
-@media (max-width: 639px) {
-    .show-mobile { display: block  !important; }
-    .hide-mobile { display: none   !important; }
-}
-
-@media (min-width: 640px) and (max-width: 1023px) {
-    .show-tablet { display: block !important; }
-    .hide-tablet { display: none  !important; }
-}
-
-@media (min-width: 1024px) {
-    .hide-desktop { display: none !important; }
-}
-
 /* ============================================================
-   15. FORM ELEMENTS — full width on mobile
+   20. SECTION TITLE RESPONSIVE SIZES
    ============================================================ */
-@media (max-width: 639px) {
-    select.form-control {
-        width: 100%;
-    }
-}
-
-/* ============================================================
-   16. SECTION / PAGE TITLES
-   ============================================================ */
-.section-title {
-    font-size: var(--text-2xl);
-}
-
-.glass-panel-title {
-    font-size: var(--text-xl);
-}
+.section-title    { font-size: var(--text-2xl); }
+.glass-panel-title{ font-size: var(--text-xl); }
 
 @media (max-width: 639px) {
-    .section-title {
-        font-size: var(--text-xl);
-    }
-
-    .glass-panel-title {
-        font-size: 1.1rem;
-    }
+    .section-title     { font-size: 1.3rem; }
+    .glass-panel-title { font-size: 1.05rem; }
 }

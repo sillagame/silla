@@ -1,8 +1,10 @@
 <!-- Halaman Control Panel Operator -->
 <div class="page-container">
-    <div style="margin-bottom: 30px;">
-        <h1 style="font-size: 2.2rem; margin-bottom: 5px; font-family: var(--font-heading);">💻 Operator Control Panel</h1>
-        <p style="color: var(--text-secondary);">Kelola pemanggilan dan pelayanan antrian pasien.</p>
+    <div class="page-header">
+        <div class="page-header-title">
+            <h1>💻 Operator Control Panel</h1>
+            <p>Kelola pemanggilan dan pelayanan antrian pasien.</p>
+        </div>
     </div>
 
     <?php if (!empty($success)): ?>
@@ -45,7 +47,7 @@
         </div>
     <?php else: ?>
         <!-- Mode Control Panel Aktif -->
-        <div class="grid-3" style="grid-template-columns: 2fr 1fr; gap: 24px;">
+        <div class="operator-layout">
             
             <!-- Kolom Kiri: Panggilan & Kontrol -->
             <div>
@@ -81,17 +83,17 @@
                             <?php endif; ?>
                         </div>
 
-                        <div style="display: flex; gap: 12px; justify-content: center;">
-                            <form action="<?= url('/queues/complete') ?>" method="POST" style="flex: 1;">
+                        <div class="flex-row" style="gap: 10px; justify-content: center;">
+                            <form action="<?= url('/queues/complete') ?>" method="POST" style="flex: 1; min-width: 0;">
                                 <input type="hidden" name="queue_id" value="<?= htmlspecialchars($currentQueue['id']) ?>">
-                                <button type="submit" class="btn-primary" style="width: 100%; padding: 12px; background-color: var(--success); font-weight: 700; border-radius: 8px; border: none; color: #ffffff;">
-                                    Selesai Melayani
+                                <button type="submit" class="btn btn-success" style="width: 100%;">
+                                    ✅ Selesai Melayani
                                 </button>
                             </form>
-                            <form action="<?= url('/queues/skip') ?>" method="POST" style="flex: 1;">
+                            <form action="<?= url('/queues/skip') ?>" method="POST" style="flex: 1; min-width: 0;">
                                 <input type="hidden" name="queue_id" value="<?= htmlspecialchars($currentQueue['id']) ?>">
-                                <button type="submit" class="btn-primary" style="width: 100%; padding: 12px; background-color: var(--danger); font-weight: 700; border-radius: 8px; border: none; color: #ffffff;">
-                                    Lewati (Lewat)
+                                <button type="submit" class="btn btn-danger" style="width: 100%;">
+                                    ⏭ Lewati
                                 </button>
                             </form>
                         </div>

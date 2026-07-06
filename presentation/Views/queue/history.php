@@ -40,14 +40,16 @@
 </style>
 
 <div class="page-container">
-    <div style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center;" class="no-print">
-        <div>
-            <h1 style="font-size: 2.2rem; margin-bottom: 5px; font-family: var(--font-heading);">📋 Riwayat Antrian Lengkap</h1>
-            <p style="color: var(--text-secondary);">Daftar riwayat semua antrian hari ini: <?= date('d F Y') ?>.</p>
+    <div class="page-header no-print">
+        <div class="page-header-title">
+            <h1>📋 Riwayat Antrian Lengkap</h1>
+            <p>Daftar riwayat semua antrian hari ini: <?= date('d F Y') ?>.</p>
         </div>
-        <button onclick="window.print()" class="btn-hero-primary btn-print-report" style="padding: 10px 20px; font-size: 0.88rem; border-radius: 8px;">
-            <span>🖨️</span> Cetak Laporan Harian
-        </button>
+        <div class="page-header-action">
+            <button onclick="window.print()" class="btn btn-primary btn-print-report">
+                <span>🖨️</span> Cetak Laporan Harian
+            </button>
+        </div>
     </div>
 
     <!-- Judul Laporan Khusus Print -->
