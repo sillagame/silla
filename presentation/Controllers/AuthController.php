@@ -58,7 +58,12 @@ class AuthController extends Controller
             $this->redirect('/dashboard');
 
         } catch (Exception $e) {
-            $_SESSION['auth_error'] = $e->getMessage();
+            $msg = $e->getMessage();
+            // Deteksi error koneksi database — tampilkan pesan yang lebih ramah
+            if (str_contains($msg, 'SQLSTATE') || str_contains($msg, 'Connection') || str_contains($msg, 'could not')) {
+                $msg = 'Gagal terhubung ke server database. Periksa konfigurasi koneksi atau coba beberapa saat lagi.';
+            }
+            $_SESSION['auth_error'] = $msg;
             $this->redirect('/login');
         }
     }
@@ -103,7 +108,11 @@ class AuthController extends Controller
             $this->redirect('/login');
 
         } catch (Exception $e) {
-            $_SESSION['auth_error'] = $e->getMessage();
+            $msg = $e->getMessage();
+            if (str_contains($msg, 'SQLSTATE') || str_contains($msg, 'Connection') || str_contains($msg, 'could not')) {
+                $msg = 'Gagal terhubung ke server database. Periksa konfigurasi koneksi atau coba beberapa saat lagi.';
+            }
+            $_SESSION['auth_error'] = $msg;
             $this->redirect('/register');
         }
     }

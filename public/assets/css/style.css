@@ -949,3 +949,156 @@ h1, h2, h3, h4, h5, h6 {
     from { transform: translateY(-30px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
 }
+/* ============================================
+   Auth Pages (Login & Register)
+   ============================================ */
+
+/* Buat main content area stretch full height ketika tidak ada navbar */
+.main-content-layout {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Wrapper untuk centering kartu login/register secara horizontal & vertikal */
+.auth-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    min-height: 100vh;
+    background: var(--bg-main);
+}
+
+/* Kartu form login/register */
+.auth-card {
+    width: 100%;
+    max-width: 440px;
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 40px 36px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border-light);
+    animation: slideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Auth header (logo + title) */
+.auth-header {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.auth-logo {
+    width: 56px;
+    height: 56px;
+    background: var(--bg-header);
+    color: #ffffff;
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin: 0 auto 16px;
+    box-shadow: 0 4px 16px rgba(19, 82, 51, 0.3);
+}
+
+/* Auth footer (link daftar/masuk) */
+.auth-footer {
+    text-align: center;
+    margin-top: 20px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.auth-link {
+    color: var(--primary);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.auth-link:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
+/* Form elements inside auth card */
+.auth-card .form-group {
+    margin-bottom: 18px;
+}
+
+.auth-card .form-label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.auth-card .form-control {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid var(--border-light);
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-family: var(--font-body);
+    color: var(--text-primary);
+    background: #fafafa;
+    transition: var(--transition-smooth);
+    outline: none;
+}
+
+.auth-card .form-control:focus {
+    border-color: var(--primary);
+    background: #ffffff;
+    box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+.auth-card .btn-primary {
+    width: 100%;
+    padding: 14px;
+    background: var(--primary);
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: var(--font-heading);
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    letter-spacing: 0.02em;
+}
+
+.auth-card .btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px var(--primary-glow);
+}
+
+.auth-card .btn-primary:active {
+    transform: translateY(0);
+}
+
+/* Alert in auth card */
+.auth-card .alert {
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    margin-bottom: 18px;
+    line-height: 1.5;
+}
+
+.auth-card .alert-danger {
+    background-color: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+.auth-card .alert-success {
+    background-color: #f0fdf4;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
+}
