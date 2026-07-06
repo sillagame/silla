@@ -193,3 +193,31 @@ function registerKioskAction() {
         });
     });
 }
+
+// Navigation Drawer Toggle
+document.addEventListener('DOMContentLoaded', () => {
+    const burgerBtn = document.getElementById('burgerMenuBtn');
+    const closeBtn = document.getElementById('drawerCloseBtn');
+    const overlay = document.getElementById('drawerOverlay');
+    const drawer = document.getElementById('navDrawer');
+
+    if (burgerBtn && drawer && overlay) {
+        burgerBtn.addEventListener('click', () => {
+            drawer.classList.add('open');
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        });
+
+        const closeDrawer = () => {
+            drawer.classList.remove('open');
+            overlay.classList.remove('open');
+            document.body.style.overflow = '';
+        };
+
+        if (closeBtn) {
+            closeBtn.addEventListener('click', closeDrawer);
+        }
+        overlay.addEventListener('click', closeDrawer);
+    }
+});
+
