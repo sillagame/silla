@@ -40,7 +40,7 @@ class AuthController extends Controller
         $password = $_POST['password'] ?? '';
 
         // Ambil kredensial dari konfigurasi
-        $appConfig     = require __DIR__ . '/../../../config/app.php';
+        $appConfig     = require __DIR__ . '/../../config/app.php';
         $adminEmail    = strtolower($appConfig['admin']['email']    ?? 'admin@silla.com');
         $adminPassword = $appConfig['admin']['password']             ?? 'admin123';
         $adminName     = $appConfig['admin']['name']                 ?? 'Administrator';
