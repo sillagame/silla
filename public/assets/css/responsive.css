@@ -562,6 +562,11 @@ img, svg, video, canvas, iframe, embed, object, picture {
     overflow: hidden;
 }
 
+.auth-card {
+    max-width: 400px;
+    width: 100%;
+}
+
 @media (max-width: 639px) {
     .auth-card {
         padding: var(--space-md) var(--space-sm);

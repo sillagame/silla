@@ -25,7 +25,7 @@ class AuthController extends Controller
         $success = isset($_GET['success']) ? htmlspecialchars_decode(urldecode($_GET['success'])) : null;
 
         $this->render('auth/login', [
-            'title'   => 'Login Admin - SiLLA',
+            'title'   => 'Login Admin - Puskesmas Salem',
             'error'   => $error,
             'success' => $success,
         ]);

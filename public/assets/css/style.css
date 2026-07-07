@@ -1173,6 +1173,7 @@ h1, h2, h3, h4, h5, h6 {
     right: -320px;
     width: 320px;
     height: 100vh;
+    height: 100dvh;
     background: var(--bg-header); /* Deep Green */
     box-shadow: -5px 0 25px rgba(0, 0, 0, 0.15);
     z-index: 1000;
@@ -1270,6 +1271,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .drawer-footer {
     padding: 24px;
+    padding-bottom: calc(36px + env(safe-area-inset-bottom, 0px));
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     background: rgba(0, 0, 0, 0.15);
 }

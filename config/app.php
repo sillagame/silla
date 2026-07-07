@@ -5,7 +5,7 @@
  */
 
 return [
-    'name' => 'SiLLA - Sistem Layanan Loket Antrian',
+    'name' => 'Sistem Informasi Antrian Pasien Puskesmas Salem',
     'version' => '1.0.0',
     'timezone' => 'Asia/Jakarta',
     'locale' => 'id_ID',

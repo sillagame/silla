@@ -169,8 +169,8 @@ function registerKioskAction() {
 
                 container.innerHTML = `
                     <div class="ticket-print">
-                        <div class="ticket-header">SiLLA</div>
-                        <div style="font-size: 0.85rem; color: #64748b; margin-bottom: 10px;">Sistem Layanan Loket Antrian</div>
+                        <div class="ticket-header">Puskesmas Salem</div>
+                        <div style="font-size: 0.85rem; color: #64748b; margin-bottom: 10px;">Sistem Informasi Antrian Pasien</div>
                         <hr style="border: none; border-top: 1px dashed #cbd5e1; margin: 10px 0;">
                         <div style="font-size: 0.9rem; font-weight: 600; color: #475569;">NOMOR ANTRIAN</div>
                         <div class="ticket-num">${res.queue.queueNumber}</div>

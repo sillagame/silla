@@ -1,9 +1,11 @@
 <div class="auth-wrapper">
     <div class="glass-panel auth-card">
         <div class="auth-header">
-            <div class="logo-icon auth-logo">Q</div>
-            <h2 style="font-size: 1.8rem; margin-bottom: 5px;">Masuk ke SiLLA</h2>
-            <p style="color: var(--text-secondary); font-size: 0.9rem;">Sistem Layanan Loket Antrian</p>
+            <div style="margin-bottom: 20px; display: flex; justify-content: center;">
+                <img src="<?= url('/assets/logo.png') ?>" alt="Logo Puskesmas Salem" style="height: 70px; width: auto; object-fit: contain;">
+            </div>
+            <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 6px; color: var(--text-primary); line-height: 1.3;">Sistem Informasi Antrian Pasien</h2>
+            <p style="color: var(--primary-dark); font-size: 1.1rem; font-weight: 700; margin-bottom: 0;">Puskesmas Salem</p>
         </div>
 
         <?php if (!empty($error)): ?>
