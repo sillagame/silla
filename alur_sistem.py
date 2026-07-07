@@ -1,20 +1,24 @@
 """
 Alur Sistem — Sistem Informasi Antrian Pasien Puskesmas Salem
 =============================================================
-Diagram Use Case v3:
+Diagram Use Case v4:
 - Pasien     -> Fitur Publik (memencar langsung)
 - Admin      -> Fitur Publik (juga bisa, panah putus-putus)
 - Admin      -> Login (wajib)
 - Login      -> Fitur Petugas (memencar, bukan rantai linear)
+- Logo Puskesmas Salem ditampilkan di pojok kiri atas diagram
 
 Output: alur_sistem.png
 """
 
+import numpy as np
+from PIL import Image
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.patches import FancyBboxPatch
+from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 
 # ─────────────────────────────────────────────
 # Canvas
@@ -70,6 +74,22 @@ def arrow(ax, x1, y1, x2, y2, color, lw=1.3,
         zorder=2)
 
 # ─────────────────────────────────────────────
+# Logo helper  — hapus background putih → transparan
+# ─────────────────────────────────────────────
+def load_logo_transparent(path, tolerance=30):
+    """Baca logo, ganti piksel putih (±tolerance) jadi transparan."""
+    img = Image.open(path).convert("RGBA")
+    data = np.array(img, dtype=np.uint8)
+    r, g, b, a = data[...,0], data[...,1], data[...,2], data[...,3]
+    white_mask = (r > 255 - tolerance) & (g > 255 - tolerance) & (b > 255 - tolerance)
+    data[white_mask, 3] = 0          # set alpha=0 untuk piksel putih
+    return Image.fromarray(data, "RGBA")
+
+LOGO_PATH = r"E:\freelance\silla\assets\logo.png"
+logo_img  = load_logo_transparent(LOGO_PATH)
+logo_arr  = np.array(logo_img)
+
+# ─────────────────────────────────────────────
 # System Boundary
 # ─────────────────────────────────────────────
 ax.add_patch(FancyBboxPatch(
@@ -77,7 +97,19 @@ ax.add_patch(FancyBboxPatch(
     boxstyle="round,pad=0.18",
     facecolor=C_SYS_BG, edgecolor=C_SYS_BD,
     linewidth=2.2, zorder=1))
-ax.text(10.0, 19.35,
+
+# Embed logo di pojok kiri atas system boundary
+logo_ob = OffsetImage(logo_arr, zoom=0.13)   # zoom dikecilkan agar proporsional
+logo_ab = AnnotationBbox(
+    logo_ob,
+    (4.55, 19.2),                # posisi (x, y) dalam data-units
+    frameon=False,
+    zorder=6
+)
+ax.add_artist(logo_ab)
+
+# Judul di sebelah kanan logo (geser kanan sedikit)
+ax.text(10.8, 19.35,
         "Sistem Informasi Antrian Pasien Puskesmas Salem",
         ha="center", va="center",
         fontsize=11.5, fontweight="bold", color=C_TITLE, zorder=5)
